@@ -1,0 +1,626 @@
+Cmp-Mod V01 Created by Cvpcb (2015-05-26 BZR 5684)-product   date = Fri Nov  6 20:31:57 2015
+
+BeginCmp
+TimeStamp = /5619BDFB;
+Reference = C1;
+ValeurCmp = 100n;
+IdModule  = Capacitors_SMD:C_1206;
+EndCmp
+
+BeginCmp
+TimeStamp = /561A4671;
+Reference = C2;
+ValeurCmp = 10u;
+IdModule  = Capacitors_SMD:C_1206;
+EndCmp
+
+BeginCmp
+TimeStamp = /5616EBAF;
+Reference = C3;
+ValeurCmp = 100n;
+IdModule  = Capacitors_SMD:C_0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /5616EB27;
+Reference = C4;
+ValeurCmp = 100n;
+IdModule  = Capacitors_SMD:C_0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /5616E9F3;
+Reference = C5;
+ValeurCmp = 100n;
+IdModule  = Capacitors_SMD:C_0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /561707B4;
+Reference = C6;
+ValeurCmp = 1u;
+IdModule  = Capacitors_SMD:C_1206;
+EndCmp
+
+BeginCmp
+TimeStamp = /561706B5;
+Reference = C7;
+ValeurCmp = 1n;
+IdModule  = Capacitors_SMD:C_1206;
+EndCmp
+
+BeginCmp
+TimeStamp = /56173116;
+Reference = C8;
+ValeurCmp = 20p;
+IdModule  = Capacitors_SMD:C_0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /5617340F;
+Reference = C9;
+ValeurCmp = 20p;
+IdModule  = Capacitors_SMD:C_0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /561A5E89;
+Reference = C10;
+ValeurCmp = 1u;
+IdModule  = Capacitors_SMD:C_1206;
+EndCmp
+
+BeginCmp
+TimeStamp = /561A59DF;
+Reference = C11;
+ValeurCmp = 100n;
+IdModule  = Capacitors_SMD:C_0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /561A5B6B;
+Reference = C12;
+ValeurCmp = 10u;
+IdModule  = Capacitors_SMD:C_1206;
+EndCmp
+
+BeginCmp
+TimeStamp = /561A5ADD;
+Reference = C13;
+ValeurCmp = 100n;
+IdModule  = Capacitors_SMD:C_0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /561AB791;
+Reference = D1;
+ValeurCmp = Led_Small;
+IdModule  = LEDs:LED-0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /561ABB4B;
+Reference = D2;
+ValeurCmp = Led_Small;
+IdModule  = LEDs:LED-0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /561ABBFF;
+Reference = D3;
+ValeurCmp = Led_Small;
+IdModule  = LEDs:LED-0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /56118CAC;
+Reference = D11;
+ValeurCmp = 1N4148;
+IdModule  = WD_Packages:CHERRY_MX_DIODE;
+EndCmp
+
+BeginCmp
+TimeStamp = /5611AA72;
+Reference = D12;
+ValeurCmp = 1N4148;
+IdModule  = WD_Packages:CHERRY_MX_DIODE;
+EndCmp
+
+BeginCmp
+TimeStamp = /5611AD46;
+Reference = D13;
+ValeurCmp = 1N4148;
+IdModule  = WD_Packages:CHERRY_MX_DIODE;
+EndCmp
+
+BeginCmp
+TimeStamp = /5611B0FF;
+Reference = D14;
+ValeurCmp = 1N4148;
+IdModule  = WD_Packages:CHERRY_MX_DIODE;
+EndCmp
+
+BeginCmp
+TimeStamp = /5611BB3E;
+Reference = D15;
+ValeurCmp = 1N4148;
+IdModule  = WD_Packages:CHERRY_MX_DIODE;
+EndCmp
+
+BeginCmp
+TimeStamp = /56118D62;
+Reference = D21;
+ValeurCmp = 1N4148;
+IdModule  = WD_Packages:CHERRY_MX_DIODE;
+EndCmp
+
+BeginCmp
+TimeStamp = /5611AA78;
+Reference = D22;
+ValeurCmp = 1N4148;
+IdModule  = WD_Packages:CHERRY_MX_DIODE;
+EndCmp
+
+BeginCmp
+TimeStamp = /5611AD4C;
+Reference = D23;
+ValeurCmp = 1N4148;
+IdModule  = WD_Packages:CHERRY_MX_DIODE;
+EndCmp
+
+BeginCmp
+TimeStamp = /5611B105;
+Reference = D24;
+ValeurCmp = 1N4148;
+IdModule  = WD_Packages:CHERRY_MX_DIODE;
+EndCmp
+
+BeginCmp
+TimeStamp = /5611BB44;
+Reference = D25;
+ValeurCmp = 1N4148;
+IdModule  = WD_Packages:CHERRY_MX_DIODE;
+EndCmp
+
+BeginCmp
+TimeStamp = /56118DC4;
+Reference = D31;
+ValeurCmp = 1N4148;
+IdModule  = WD_Packages:CHERRY_MX_DIODE;
+EndCmp
+
+BeginCmp
+TimeStamp = /5611AA7E;
+Reference = D32;
+ValeurCmp = 1N4148;
+IdModule  = WD_Packages:CHERRY_MX_DIODE;
+EndCmp
+
+BeginCmp
+TimeStamp = /5611AD52;
+Reference = D33;
+ValeurCmp = 1N4148;
+IdModule  = WD_Packages:CHERRY_MX_DIODE;
+EndCmp
+
+BeginCmp
+TimeStamp = /5611B10B;
+Reference = D34;
+ValeurCmp = 1N4148;
+IdModule  = WD_Packages:CHERRY_MX_DIODE;
+EndCmp
+
+BeginCmp
+TimeStamp = /5611BB4A;
+Reference = D35;
+ValeurCmp = 1N4148;
+IdModule  = WD_Packages:CHERRY_MX_DIODE;
+EndCmp
+
+BeginCmp
+TimeStamp = /56118E26;
+Reference = D41;
+ValeurCmp = 1N4148;
+IdModule  = WD_Packages:CHERRY_MX_DIODE;
+EndCmp
+
+BeginCmp
+TimeStamp = /5611AA84;
+Reference = D42;
+ValeurCmp = 1N4148;
+IdModule  = WD_Packages:CHERRY_MX_DIODE;
+EndCmp
+
+BeginCmp
+TimeStamp = /5611AD58;
+Reference = D43;
+ValeurCmp = 1N4148;
+IdModule  = WD_Packages:CHERRY_MX_DIODE;
+EndCmp
+
+BeginCmp
+TimeStamp = /5611B111;
+Reference = D44;
+ValeurCmp = 1N4148;
+IdModule  = WD_Packages:CHERRY_MX_DIODE;
+EndCmp
+
+BeginCmp
+TimeStamp = /5611BB50;
+Reference = D45;
+ValeurCmp = 1N4148;
+IdModule  = WD_Packages:CHERRY_MX_DIODE;
+EndCmp
+
+BeginCmp
+TimeStamp = /56118E84;
+Reference = D51;
+ValeurCmp = 1N4148;
+IdModule  = WD_Packages:CHERRY_MX_DIODE;
+EndCmp
+
+BeginCmp
+TimeStamp = /5611AA8A;
+Reference = D52;
+ValeurCmp = 1N4148;
+IdModule  = WD_Packages:CHERRY_MX_DIODE;
+EndCmp
+
+BeginCmp
+TimeStamp = /5611AD5E;
+Reference = D53;
+ValeurCmp = 1N4148;
+IdModule  = WD_Packages:CHERRY_MX_DIODE;
+EndCmp
+
+BeginCmp
+TimeStamp = /5611B117;
+Reference = D54;
+ValeurCmp = 1N4148;
+IdModule  = WD_Packages:CHERRY_MX_DIODE;
+EndCmp
+
+BeginCmp
+TimeStamp = /5611BB56;
+Reference = D55;
+ValeurCmp = 1N4148;
+IdModule  = WD_Packages:CHERRY_MX_DIODE;
+EndCmp
+
+BeginCmp
+TimeStamp = /56170307;
+Reference = L1;
+ValeurCmp = bead;
+IdModule  = Capacitors_SMD:C_0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /561B031A;
+Reference = P1;
+ValeurCmp = JTAG_SWDP;
+IdModule  = WD_Packages:TC2030-IDC-NL;
+EndCmp
+
+BeginCmp
+TimeStamp = /56195B5F;
+Reference = P2;
+ValeurCmp = USB-B;
+IdModule  = WD_Packages:MUSB-X151-XX;
+EndCmp
+
+BeginCmp
+TimeStamp = /563C8B90;
+Reference = P3;
+ValeurCmp = SPIM;
+IdModule  = WD_Packages:Harwin-M702-230642;
+EndCmp
+
+BeginCmp
+TimeStamp = /563C8D91;
+Reference = P4;
+ValeurCmp = SPIS;
+IdModule  = WD_Packages:Harwin-M702-230642;
+EndCmp
+
+BeginCmp
+TimeStamp = /563D0DAC;
+Reference = P5;
+ValeurCmp = I2CI;
+IdModule  = WD_Packages:Harwin-M702-230642;
+EndCmp
+
+BeginCmp
+TimeStamp = /563D0DB2;
+Reference = P6;
+ValeurCmp = I2CO;
+IdModule  = WD_Packages:Harwin-M702-230642;
+EndCmp
+
+BeginCmp
+TimeStamp = /563CE4C8;
+Reference = R1;
+ValeurCmp = 10k;
+IdModule  = Resistors_SMD:R_0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /56173EC5;
+Reference = R2;
+ValeurCmp = 0;
+IdModule  = Resistors_SMD:R_0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /56198002;
+Reference = R3;
+ValeurCmp = 22;
+IdModule  = Resistors_SMD:R_0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /56198284;
+Reference = R4;
+ValeurCmp = 22;
+IdModule  = Resistors_SMD:R_0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /561AAFA2;
+Reference = R5;
+ValeurCmp = 1k;
+IdModule  = Resistors_SMD:R_0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /561AB17F;
+Reference = R6;
+ValeurCmp = 1k;
+IdModule  = Resistors_SMD:R_0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /561AB231;
+Reference = R7;
+ValeurCmp = 1k;
+IdModule  = Resistors_SMD:R_0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /561B0C67;
+Reference = R8;
+ValeurCmp = 1k5;
+IdModule  = Resistors_SMD:R_0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /561A9B17;
+Reference = R9;
+ValeurCmp = 33;
+IdModule  = Resistors_SMD:R_0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /563CF804;
+Reference = R10;
+ValeurCmp = 4k7;
+IdModule  = Resistors_SMD:R_0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /563CFBAA;
+Reference = R11;
+ValeurCmp = 4k7;
+IdModule  = Resistors_SMD:R_0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /5619D964;
+Reference = SW1;
+ValeurCmp = SW;
+IdModule  = WD_Packages:CHERRY_PCB_DG2;
+EndCmp
+
+BeginCmp
+TimeStamp = /5619ED59;
+Reference = SW11;
+ValeurCmp = SW;
+IdModule  = WD_Packages:CHERRY_PCB_100H;
+EndCmp
+
+BeginCmp
+TimeStamp = /5619FAA9;
+Reference = SW12;
+ValeurCmp = SW;
+IdModule  = WD_Packages:CHERRY_PCB_100H;
+EndCmp
+
+BeginCmp
+TimeStamp = /561A0614;
+Reference = SW13;
+ValeurCmp = SW;
+IdModule  = WD_Packages:CHERRY_PCB_100H;
+EndCmp
+
+BeginCmp
+TimeStamp = /561A0BE0;
+Reference = SW14;
+ValeurCmp = SW;
+IdModule  = WD_Packages:CHERRY_PCB_100H;
+EndCmp
+
+BeginCmp
+TimeStamp = /561A0C86;
+Reference = SW15;
+ValeurCmp = SW;
+IdModule  = WD_Packages:CHERRY_PCB_100H;
+EndCmp
+
+BeginCmp
+TimeStamp = /561A025E;
+Reference = SW21;
+ValeurCmp = SW;
+IdModule  = WD_Packages:CHERRY_PCB_100H;
+EndCmp
+
+BeginCmp
+TimeStamp = /561A00EC;
+Reference = SW22;
+ValeurCmp = SW;
+IdModule  = WD_Packages:CHERRY_PCB_100H;
+EndCmp
+
+BeginCmp
+TimeStamp = /561A06D6;
+Reference = SW23;
+ValeurCmp = SW;
+IdModule  = WD_Packages:CHERRY_PCB_100H;
+EndCmp
+
+BeginCmp
+TimeStamp = /561A0B3C;
+Reference = SW24;
+ValeurCmp = SW;
+IdModule  = WD_Packages:CHERRY_PCB_100H;
+EndCmp
+
+BeginCmp
+TimeStamp = /561A0D56;
+Reference = SW25;
+ValeurCmp = SW;
+IdModule  = WD_Packages:CHERRY_PCB_100H;
+EndCmp
+
+BeginCmp
+TimeStamp = /561A0330;
+Reference = SW31;
+ValeurCmp = SW;
+IdModule  = WD_Packages:CHERRY_PCB_100H;
+EndCmp
+
+BeginCmp
+TimeStamp = /561A01DA;
+Reference = SW32;
+ValeurCmp = SW;
+IdModule  = WD_Packages:CHERRY_PCB_100H;
+EndCmp
+
+BeginCmp
+TimeStamp = /561A0768;
+Reference = SW33;
+ValeurCmp = SW;
+IdModule  = WD_Packages:CHERRY_PCB_100H;
+EndCmp
+
+BeginCmp
+TimeStamp = /561A0A9E;
+Reference = SW34;
+ValeurCmp = SW;
+IdModule  = WD_Packages:CHERRY_PCB_100H;
+EndCmp
+
+BeginCmp
+TimeStamp = /561A0E94;
+Reference = SW35;
+ValeurCmp = SW;
+IdModule  = WD_Packages:CHERRY_PCB_100H;
+EndCmp
+
+BeginCmp
+TimeStamp = /561A03BA;
+Reference = SW41;
+ValeurCmp = SW;
+IdModule  = WD_Packages:CHERRY_PCB_100H;
+EndCmp
+
+BeginCmp
+TimeStamp = /561A0584;
+Reference = SW42;
+ValeurCmp = SW;
+IdModule  = WD_Packages:CHERRY_PCB_100H;
+EndCmp
+
+BeginCmp
+TimeStamp = /561A07FC;
+Reference = SW43;
+ValeurCmp = SW;
+IdModule  = WD_Packages:CHERRY_PCB_100H;
+EndCmp
+
+BeginCmp
+TimeStamp = /561A09FA;
+Reference = SW44;
+ValeurCmp = SW;
+IdModule  = WD_Packages:CHERRY_PCB_100H;
+EndCmp
+
+BeginCmp
+TimeStamp = /561A0F3C;
+Reference = SW45;
+ValeurCmp = SW;
+IdModule  = WD_Packages:CHERRY_PCB_100H;
+EndCmp
+
+BeginCmp
+TimeStamp = /561A0444;
+Reference = SW51;
+ValeurCmp = SW;
+IdModule  = WD_Packages:CHERRY_PCB_100H;
+EndCmp
+
+BeginCmp
+TimeStamp = /561A04D2;
+Reference = SW52;
+ValeurCmp = SW;
+IdModule  = WD_Packages:CHERRY_PCB_100H;
+EndCmp
+
+BeginCmp
+TimeStamp = /561A0896;
+Reference = SW53;
+ValeurCmp = SW;
+IdModule  = WD_Packages:CHERRY_PCB_100H;
+EndCmp
+
+BeginCmp
+TimeStamp = /561A092E;
+Reference = SW54;
+ValeurCmp = SW;
+IdModule  = WD_Packages:CHERRY_PCB_100H;
+EndCmp
+
+BeginCmp
+TimeStamp = /561A0FEA;
+Reference = SW55;
+ValeurCmp = SW;
+IdModule  = WD_Packages:CHERRY_PCB_100H;
+EndCmp
+
+BeginCmp
+TimeStamp = /56192D58;
+Reference = U1;
+ValeurCmp = MAX3207E;
+IdModule  = Housings_SOT-23_SOT-143_TSOT-6:SOT-23-6;
+EndCmp
+
+BeginCmp
+TimeStamp = /5616E7A1;
+Reference = U2;
+ValeurCmp = STM32F103C8;
+IdModule  = Housings_QFP:LQFP-48_7x7mm_Pitch0.5mm;
+EndCmp
+
+BeginCmp
+TimeStamp = /561A313A;
+Reference = U3;
+ValeurCmp = LD1117S33CTR;
+IdModule  = TO_SOT_Packages:SOT-223;
+EndCmp
+
+BeginCmp
+TimeStamp = /56172CD9;
+Reference = Y1;
+ValeurCmp = 16M;
+IdModule  = Crystals:Crystal_HC48-U_Vertical;
+EndCmp
+
+EndListe

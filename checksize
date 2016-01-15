@@ -1,0 +1,21 @@
+#!/bin/sh
+
+error=0
+codelimit=$((`grep rom $1 | sed -e 's/.\+ = \([0-9]\+\)K/\1 * 1024/g;tx;d;:x'`))
+datalimit=$((`grep ram $1 | sed -e 's/.\+ = \([0-9]\+\)K/\1 * 1024/g;tx;d;:x'`))
+
+set -- `arm-none-eabi-size -d "$2" | awk '/[0-9]/ {print $1 + $2, $2 + $3, $2}'`
+if [ $1 -gt $codelimit ]; then
+        echo "*** code size $1 exceeds limit of $codelimit"
+        error=1
+else
+        echo "rom: $1 bytes / data=$3"
+fi
+if [ $2 -gt $datalimit ]; then
+        echo "*** data size $2 exceeds limit of $datalimit"
+        error=1
+else
+        echo "ram: $2 bytes"
+fi
+
+exit $error

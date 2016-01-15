@@ -1,0 +1,45 @@
+Copyright (c) 2015-2016 by Willem Dijkstra <wpd@xs4all.nl>.
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+    * Neither the name of the auhor nor the names of its contributors
+      may be used to endorse or promote products derived from this software
+      without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
+DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+Licenses for other software used:
+- http://libopencm3.org, libopencm3, licensed under GPL3.
+
+- https://github.com/mludvig/mini-printf, The Minimal snprintf()
+  implementation, Copyright (c) 2013,2014 Michal Ludvig <michal@logix.cz> under
+  the 3 clause "BSD license" as above.
+
+- https://github.com/open-bldc/open-bldc/tree/master/source/libgovernor, Simple
+  ringbuffer implementation from open-bldc's libgovernor, licensed under GPL3.
+
+- Cherry kicad footprints were found on deskthority. Reputed originals by
+  bpiphany, moved to new style kicad mods by stormbard.
+
+- http://www.fourwalledcubicle.com/LUFA.php, Lightweight USB Framework for
+  AVRs, Copyright (c) 2014, Dean Camera
+
+- http://mcuoneclipse.com/2012/11/24/debugging-hard-faults-on-arm-cortex-m/,
+  Copyright (c) 2012, Erich Styger
+
+- Gojira drawing by ddjvigo
