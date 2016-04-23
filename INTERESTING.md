@@ -57,4 +57,8 @@ If the initial usb negotiation fails, the kernel will ignore the attached
 device. Reconnecting the usb plug will restart the negotiation, but is not
 always convenient when you have a debugger on the usb keyboard waiting for an
 interesting breakpoint. There is a utility in util/usbreset that will reset the
-usb bus and restart negotiation without having to replug the connector.
+usb bus and restart negotiation without having to replug the connector. E.g.
+
+       ./util/usbreset /dev/bus/usb/005/002
+
+Where /dev/bus/usb/005/002 is the keyboard device to be reset.
