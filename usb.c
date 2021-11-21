@@ -40,25 +40,31 @@
 #include <stdlib.h>
 #include <libopencm3/cm3/nvic.h>
 #include <libopencm3/cm3/systick.h>
+#include <libopencm3/stm32/gpio.h>
 #include <libopencm3/stm32/rcc.h>
 #include <libopencm3/stm32/spi.h>
 #include <libopencm3/stm32/st_usbfs.h>
-#include <libopencm3/usb/usbd.h>
-#include <libopencm3/usb/hid.h>
 #include <libopencm3/usb/cdc.h>
-#include <libopencm3/stm32/gpio.h>
+#include <libopencm3/usb/hid.h>
+#include <libopencm3/usb/usbd.h>
+
 #include "descriptor.h"
+#include "elog.h"
+#include "extrakey.h"
 #include "hid.h"
-#include "usb.h"
-#include "serial.h"
 #include "keyboard.h"
 #include "mouse.h"
-#include "extrakey.h"
-#include "elog.h"
+#include "usb.h"
 #include "usb_keycode.h"
 
 static usbd_device *usbd_dev;
-volatile uint32_t usb_ms = 0;
+volatile uint32_t usb_ms;
+volatile uint32_t usb_ifs_enumerated;
+volatile uint8_t usb_ep_keyboard_idle;
+volatile uint8_t usb_ep_mouse_idle;
+volatile uint8_t usb_ep_nkro_idle;
+volatile uint8_t usb_ep_extrakey_idle;
+volatile uint8_t usb_ep_serial_idle;
 
 /*
  * USB hid
@@ -487,28 +493,28 @@ const struct usb_interface_descriptor nkro_iface = {
  */
 
 static const struct usb_endpoint_descriptor comm_endpoint[] = {{
-	.bLength = USB_DT_ENDPOINT_SIZE,
-	.bDescriptorType = USB_DT_ENDPOINT,
-	.bEndpointAddress = USB_ENDPOINT_ADDR_IN(EP_SERIALCOMM),
-	.bmAttributes = USB_ENDPOINT_ATTR_INTERRUPT,
-	.wMaxPacketSize = EP_SIZE_SERIALCOMM,
-	.bInterval = 0xff,
+    .bLength = USB_DT_ENDPOINT_SIZE,
+    .bDescriptorType = USB_DT_ENDPOINT,
+    .bEndpointAddress = USB_ENDPOINT_ADDR_IN(EP_SERIALCOMM),
+    .bmAttributes = USB_ENDPOINT_ATTR_INTERRUPT,
+    .wMaxPacketSize = EP_SIZE_SERIALCOMM,
+    .bInterval = 0xff,
     }};
 
 static const struct usb_endpoint_descriptor data_endpoint[] = {{
-	.bLength = USB_DT_ENDPOINT_SIZE,
-	.bDescriptorType = USB_DT_ENDPOINT,
-	.bEndpointAddress = USB_ENDPOINT_ADDR_OUT(EP_SERIALDATAOUT),
-	.bmAttributes = USB_ENDPOINT_ATTR_BULK,
-	.wMaxPacketSize = EP_SIZE_SERIALDATAOUT,
-	.bInterval = 0x0a,
+    .bLength = USB_DT_ENDPOINT_SIZE,
+    .bDescriptorType = USB_DT_ENDPOINT,
+    .bEndpointAddress = USB_ENDPOINT_ADDR_OUT(EP_SERIALDATAOUT),
+    .bmAttributes = USB_ENDPOINT_ATTR_BULK,
+    .wMaxPacketSize = EP_SIZE_SERIALDATAOUT,
+    .bInterval = 0x0a,
     }, {
-	.bLength = USB_DT_ENDPOINT_SIZE,
-	.bDescriptorType = USB_DT_ENDPOINT,
-	.bEndpointAddress = USB_ENDPOINT_ADDR_IN(EP_SERIALDATAIN),
-	.bmAttributes = USB_ENDPOINT_ATTR_BULK,
-	.wMaxPacketSize = EP_SIZE_SERIALDATAIN,
-	.bInterval = 0x0a,
+    .bLength = USB_DT_ENDPOINT_SIZE,
+    .bDescriptorType = USB_DT_ENDPOINT,
+    .bEndpointAddress = USB_ENDPOINT_ADDR_IN(EP_SERIALDATAIN),
+    .bmAttributes = USB_ENDPOINT_ATTR_BULK,
+    .wMaxPacketSize = EP_SIZE_SERIALDATAIN,
+    .bInterval = 0x0a,
     }};
 
 static const struct {
@@ -547,100 +553,101 @@ static const struct {
 };
 
 static const struct usb_interface_descriptor cdc_comm_iface[] = {{
-	.bLength = USB_DT_INTERFACE_SIZE,
-	.bDescriptorType = USB_DT_INTERFACE,
-	.bInterfaceNumber = IF_SERIALCOMM,
-	.bAlternateSetting = 0,
-	.bNumEndpoints = 1,
-	.bInterfaceClass = USB_CLASS_CDC,
-	.bInterfaceSubClass = USB_CDC_SUBCLASS_ACM,
-	.bInterfaceProtocol = USB_CDC_PROTOCOL_AT,
-	.iInterface = STRI_COMMAND,
+    .bLength = USB_DT_INTERFACE_SIZE,
+    .bDescriptorType = USB_DT_INTERFACE,
+    .bInterfaceNumber = IF_SERIALCOMM,
+    .bAlternateSetting = 0,
+    .bNumEndpoints = 1,
+    .bInterfaceClass = USB_CLASS_CDC,
+    .bInterfaceSubClass = USB_CDC_SUBCLASS_ACM,
+    .bInterfaceProtocol = USB_CDC_PROTOCOL_AT,
+    .iInterface = STRI_COMMAND,
 
-	.endpoint = comm_endpoint,
+    .endpoint = comm_endpoint,
 
-	.extra = &cdcacm_functional_descriptors,
-	.extralen = sizeof(cdcacm_functional_descriptors),
+    .extra = &cdcacm_functional_descriptors,
+    .extralen = sizeof(cdcacm_functional_descriptors),
     }};
 
 static const struct usb_interface_descriptor cdc_data_iface[] = {{
-	.bLength = USB_DT_INTERFACE_SIZE,
-	.bDescriptorType = USB_DT_INTERFACE,
-	.bInterfaceNumber = IF_SERIALDATA,
-	.bAlternateSetting = 0,
-	.bNumEndpoints = 2,
-	.bInterfaceClass = USB_CLASS_DATA,
-	.bInterfaceSubClass = 0,
-	.bInterfaceProtocol = 0,
-	.iInterface = STRI_COMMAND,
+    .bLength = USB_DT_INTERFACE_SIZE,
+    .bDescriptorType = USB_DT_INTERFACE,
+    .bInterfaceNumber = IF_SERIALDATA,
+    .bAlternateSetting = 0,
+    .bNumEndpoints = 2,
+    .bInterfaceClass = USB_CLASS_DATA,
+    .bInterfaceSubClass = 0,
+    .bInterfaceProtocol = 0,
+    .iInterface = STRI_COMMAND,
 
-	.endpoint = data_endpoint,
+    .endpoint = data_endpoint,
     }};
 
 const struct usb_interface ifaces[] = {{
-	.num_altsetting = 1,
-	.altsetting = &keyboard_iface,
+    .num_altsetting = 1,
+    .altsetting = &keyboard_iface,
     }, {
-	.num_altsetting = 1,
-	.altsetting = &mouse_iface,
+    .num_altsetting = 1,
+    .altsetting = &mouse_iface,
     }, {
-	.num_altsetting = 1,
-	.altsetting = &extrakey_iface,
+    .num_altsetting = 1,
+    .altsetting = &extrakey_iface,
     }, {
-	.num_altsetting = 1,
-	.altsetting = &nkro_iface,
+    .num_altsetting = 1,
+    .altsetting = &nkro_iface,
     }, {
         .num_altsetting = 1,
-	.altsetting = cdc_comm_iface,
+    .altsetting = cdc_comm_iface,
     }, {
-	.num_altsetting = 1,
-	.altsetting = cdc_data_iface,
+    .num_altsetting = 1,
+    .altsetting = cdc_data_iface,
     }};
 
 const struct usb_device_descriptor dev_descriptor = {
-	.bLength = USB_DT_DEVICE_SIZE,
-	.bDescriptorType = USB_DT_DEVICE,
-	.bcdUSB = 0x0110,
-	.bDeviceClass = 0,                     /* Each interface will specify its own class code */
-	.bDeviceSubClass = 0,
-	.bDeviceProtocol = 0,
-	.bMaxPacketSize0 = 64,
-	.idVendor = 0xDEAD,
-	.idProduct = 0xBEEF,
-	.bcdDevice = 0x010,
-	.iManufacturer = STRI_MANUFACTURER,
-	.iProduct = STRI_PRODUCT,
-	.iSerialNumber = STRI_SERIAL,
-	.bNumConfigurations = 1,
+    .bLength = USB_DT_DEVICE_SIZE,
+    .bDescriptorType = USB_DT_DEVICE,
+    .bcdUSB = 0x0110,
+    .bDeviceClass = 0,                     /* Each interface will specify its own class code */
+    .bDeviceSubClass = 0,
+    .bDeviceProtocol = 0,
+    .bMaxPacketSize0 = 64,
+    .idVendor = 0xDEAD,
+    .idProduct = 0xBEEF,
+    .bcdDevice = 0x010,
+    .iManufacturer = STRI_MANUFACTURER,
+    .iProduct = STRI_PRODUCT,
+    .iSerialNumber = STRI_SERIAL,
+    .bNumConfigurations = 1,
 };
 
 
 const struct usb_config_descriptor config = {
-	.bLength = USB_DT_CONFIGURATION_SIZE,
-	.bDescriptorType = USB_DT_CONFIGURATION,
-	.wTotalLength = 0,
-	.bNumInterfaces = IF_MAX,
-	.bConfigurationValue = 1,
-	.iConfiguration = 0,
-	.bmAttributes = (CD_A_RESERVED | CD_A_REMOTEWAKEUP),
-	.bMaxPower = CD_MP_100MA,
+    .bLength = USB_DT_CONFIGURATION_SIZE,
+    .bDescriptorType = USB_DT_CONFIGURATION,
+    .wTotalLength = 0,
+    .bNumInterfaces = IF_MAX,
+    .bConfigurationValue = 1,
+    .iConfiguration = 0,
+    .bmAttributes = (CD_A_RESERVED | CD_A_REMOTEWAKEUP),
+    .bMaxPower = CD_MP_100MA,
 
-	.interface = ifaces,
+    .interface = ifaces,
 };
 
-static const char *usb_strings[] = {
-	"dijkstra.xyz",
-	"Gojira",
-	"Beta",
-        "Boot keyboard",
-        "Boot mouse",
-        "Control keyboard",
-        "NKRO keyboard",
-        "Command channel"
+const char *usb_strings[] = {
+    "dijkstra.xyz",
+    "Gojira",
+    GOJIRA_VERSION,
+    "Boot keyboard",
+    "Boot mouse",
+    "Control keyboard",
+    "NKRO keyboard",
+    "Command channel"
 };
 
-static int usb_control_request(usbd_device *dev, struct usb_setup_data *req, uint8_t **buf,
-                               uint16_t *len, void (**complete)(usbd_device *dev, struct usb_setup_data *req))
+static enum usbd_request_return_codes
+usb_control_request(usbd_device *dev, struct usb_setup_data *req, uint8_t **buf,
+                    uint16_t *len, void (**complete)(usbd_device *dev, struct usb_setup_data *req))
 {
     (void)complete;
     (void)buf;
@@ -654,24 +661,28 @@ static int usb_control_request(usbd_device *dev, struct usb_setup_data *req, uin
             case IF_KEYBOARD:
                 *buf = (uint8_t *) &keyboard_report_descriptor;
                 *len = sizeof(keyboard_report_descriptor);
+                usb_ifs_enumerated |= (1 << IF_KEYBOARD);
                 return USBD_REQ_HANDLED;
                 break;
 
             case IF_MOUSE:
                 *buf = (uint8_t *) &mouse_report_descriptor;
                 *len = sizeof(mouse_report_descriptor);
+                usb_ifs_enumerated |= (1 << IF_MOUSE);
                 return USBD_REQ_HANDLED;
                 break;
 
             case IF_EXTRAKEY:
                 *buf = (uint8_t *) &extrakey_report_descriptor;
                 *len = sizeof(extrakey_report_descriptor);
+                usb_ifs_enumerated |= (1 << IF_EXTRAKEY);
                 return USBD_REQ_HANDLED;
                 break;
 
             case IF_NKRO:
                 *buf = (uint8_t *) &nkro_report_descriptor;
                 *len = sizeof(nkro_report_descriptor);
+                usb_ifs_enumerated |= (1 << IF_NKRO);
                 return USBD_REQ_HANDLED;
                 break;
             }
@@ -778,14 +789,14 @@ static int usb_control_request(usbd_device *dev, struct usb_setup_data *req, uin
         }
     } else if ((req->bRequest == USB_CDC_REQ_SET_CONTROL_LINE_STATE) ||
                (req->bRequest == USB_CDC_REQ_SET_LINE_CODING)) {
-        /* Also end of enumeration, so enable all other activities */
-        keyboard_active = serial_active = true;
+        usb_ifs_enumerated |= (1 << IF_SERIALCOMM);
         return USBD_REQ_HANDLED;
     }
     return USBD_REQ_NEXT_CALLBACK;
 }
 
-static uint16_t usb_write_packet(usbd_device *dev, uint8_t addr, const void* buf, uint16_t len)
+static uint16_t
+usb_write_packet(usbd_device *dev, uint8_t addr, const void* buf, uint16_t len)
 {
     int tries = 0;
     uint16_t wlen;
@@ -794,30 +805,42 @@ static uint16_t usb_write_packet(usbd_device *dev, uint8_t addr, const void* buf
          (wlen == 0) && (tries < SEND_RETRIES);
          tries++);
 
+    if (wlen == 0) {
+        elog("could not send packet to %x", addr);
+    }
     return wlen;
 }
 
-void usb_update_keyboard(report_keyboard_t *report)
+void
+usb_update_keyboard(report_keyboard_t *report)
 {
+    usb_ep_keyboard_idle = 0;
     usb_write_packet(usbd_dev, EP_KEYBOARD, report->raw, EP_SIZE_KEYBOARD);
 }
 
-void usb_update_mouse(report_mouse_t *report)
+void
+usb_update_mouse(report_mouse_t *report)
 {
+    usb_ep_mouse_idle = 0;
     usb_write_packet(usbd_dev, EP_MOUSE, &report->raw, EP_SIZE_MOUSE);
 }
 
-void usb_update_extrakey(report_extrakey_t *report)
+void
+usb_update_extrakey(report_extrakey_t *report)
 {
+    usb_ep_extrakey_idle = 0;
     usb_write_packet(usbd_dev, EP_EXTRAKEY, &report->raw, EP_SIZE_EXTRAKEY);
 }
 
-void usb_update_nkro(report_nkro_t *report)
+void
+usb_update_nkro(report_nkro_t *report)
 {
+    usb_ep_nkro_idle = 0;
     usb_write_packet(usbd_dev, EP_NKRO, &report->raw, EP_SIZE_NKRO);
 }
 
-static void usb_set_config(usbd_device *dev, uint16_t wValue)
+static void
+usb_set_config(usbd_device *dev, uint16_t wValue)
 {
     (void)wValue;
 
@@ -825,22 +848,25 @@ static void usb_set_config(usbd_device *dev, uint16_t wValue)
                   USB_ENDPOINT_ADDR_IN(EP_KEYBOARD),
                   USB_ENDPOINT_ATTR_INTERRUPT,
                   EP_SIZE_ALIGN(EP_SIZE_KEYBOARD),
-                  NULL);
+                  usb_endpoint_idle);
+
     usbd_ep_setup(dev,
                   USB_ENDPOINT_ADDR_IN(EP_MOUSE),
                   USB_ENDPOINT_ATTR_INTERRUPT,
                   EP_SIZE_ALIGN(EP_SIZE_MOUSE),
-                  NULL);
+                  usb_endpoint_idle);
+
     usbd_ep_setup(dev,
                   USB_ENDPOINT_ADDR_IN(EP_EXTRAKEY),
                   USB_ENDPOINT_ATTR_INTERRUPT,
                   EP_SIZE_ALIGN(EP_SIZE_EXTRAKEY),
-                  NULL);
+                  usb_endpoint_idle);
+
     usbd_ep_setup(dev,
                   USB_ENDPOINT_ADDR_IN(EP_NKRO),
                   USB_ENDPOINT_ATTR_INTERRUPT,
                   EP_SIZE_ALIGN(EP_SIZE_NKRO),
-                  NULL);
+                  usb_endpoint_idle);
 
     usbd_ep_setup(dev,
                   USB_ENDPOINT_ADDR_OUT(EP_SERIALDATAOUT),
@@ -851,7 +877,7 @@ static void usb_set_config(usbd_device *dev, uint16_t wValue)
                   USB_ENDPOINT_ADDR_IN(EP_SERIALDATAIN),
                   USB_ENDPOINT_ATTR_BULK,
                   EP_SIZE_ALIGN(EP_SIZE_SERIALDATAIN),
-                  NULL);
+                  usb_endpoint_idle);
     usbd_ep_setup(dev,
                   USB_ENDPOINT_ADDR_IN(EP_SERIALCOMM),
                   USB_ENDPOINT_ATTR_INTERRUPT,
@@ -865,30 +891,9 @@ static void usb_set_config(usbd_device *dev, uint16_t wValue)
 }
 
 static void
-usb_reset(void)
-{
-    elog("usb reset\n");
-    keyboard_active = serial_active = false;
-}
-
-static void
-usb_resume(void)
-{
-    elog("usb resume\n");
-    keyboard_active = serial_active = true;
-}
-
-static void
 usb_sof(void)
 {
     usb_ms++;
-}
-
-static void
-usb_suspend(void)
-{
-    elog("usb suspend\n");
-    keyboard_active = serial_active = false;
 }
 
 uint32_t
@@ -903,6 +908,14 @@ uint8_t usbd_control_buffer[256] __attribute__((aligned));
 void
 usb_init(void)
 {
+    usb_ms = 0;
+    usb_ifs_enumerated = 0;
+    usb_ep_serial_idle = 1;
+    usb_ep_extrakey_idle = 1;
+    usb_ep_keyboard_idle = 1;
+    usb_ep_mouse_idle = 1;
+    usb_ep_nkro_idle = 1;
+
     usbd_dev = usbd_init(&st_usbfs_v1_usb_driver,
                          &dev_descriptor,
                          &config,
@@ -923,6 +936,34 @@ usb_poll(void)
 }
 
 void
+usb_endpoint_idle(usbd_device *dev, uint8_t ep)
+{
+    (void)dev;
+
+    switch (ep) {
+        case EP_KEYBOARD:
+            usb_ep_keyboard_idle = 1;
+            break;
+
+        case EP_MOUSE:
+            usb_ep_mouse_idle = 1;
+            break;
+
+        case EP_NKRO:
+            usb_ep_nkro_idle = 1;
+            break;
+
+        case EP_EXTRAKEY:
+            usb_ep_extrakey_idle = 1;
+            break;
+
+        case EP_SERIALDATAIN:
+            usb_ep_serial_idle = 1;
+            break;
+    }
+}
+
+void
 cdcacm_data_rx_cb(usbd_device *dev, uint8_t ep)
 {
     (void)ep;
@@ -940,5 +981,6 @@ cdcacm_data_rx_cb(usbd_device *dev, uint8_t ep)
 void
 cdcacm_data_wx(uint8_t *buf, uint16_t len)
 {
+    usb_ep_serial_idle = 0;
     usbd_ep_write_packet(usbd_dev, EP_SERIALDATAIN, buf, len);
 }

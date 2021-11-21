@@ -133,7 +133,7 @@ matrix_scan()
         if (matrix_debounce.row[r] != col) {
             matrix_debounce.row[r] = col;
             matrix_update = true;
-            debounce = timer_set(DEBOUNCE_MS);
+            debounce = timer_set(MS_DEBOUNCE);
         }
         row_clear();
     }

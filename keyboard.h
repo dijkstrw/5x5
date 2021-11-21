@@ -45,6 +45,7 @@ void keyboard_add_modifier(uint8_t modifier);
 void keyboard_del_modifier(uint8_t modifier);
 
 extern uint8_t nkro_idle;
+extern bool nkro_active;
 report_nkro_t *nkro_report(void);
 
 #endif

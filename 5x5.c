@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2016 by Willem Dijkstra <wpd@xs4all.nl>.
+ * Copyright (c) 2015-2021 by Willem Dijkstra <wpd@xs4all.nl>.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,34 +35,88 @@
  *   - matrix_process to detect and process matrix events
  *   - serial_out to write output
  */
+#include <libopencm3/cm3/scb.h>
 #include <libopencm3/stm32/rcc.h>
 
+#include "automouse.h"
 #include "clock.h"
-#include "usb.h"
-#include "serial.h"
-#include "matrix.h"
-#include "keyboard.h"
-#include "serial.h"
-#include "led.h"
 #include "elog.h"
+#include "keyboard.h"
+#include "led.h"
+#include "macro.h"
+#include "matrix.h"
+#include "mouse.h"
+#include "serial.h"
+#include "usb.h"
 
 static void
 mcu_init(void)
 {
-    rcc_clock_setup_in_hse_16mhz_out_72mhz();
+    rcc_clock_setup_pll(&rcc_hse_configs[RCC_CLOCK_HSE16_72MHZ]);
+}
+
+/*
+ * Usb Event handlers
+ */
+void
+usb_enumeration_complete(void)
+{
+    keyboard_active = serial_active = true;
+}
+
+void
+usb_reset(void)
+{
+    elog("usb reset");
+    keyboard_active = serial_active = false;
+}
+
+void
+usb_resume(void)
+{
+    elog("usb resume");
+    keyboard_active = serial_active = true;
+}
+
+void
+usb_suspend(void)
+{
+    elog("usb suspend");
+    keyboard_active = serial_active = false;
 }
 
 int
 main(void)
 {
+    uint32_t enumeration_timer;
+
     mcu_init();
     clock_init();
     serial_init();
     led_init();
     matrix_init();
+    macro_init();
     usb_init();
 
-    elog("initialized\n");
+    elog("initialized");
+
+    enumeration_timer = timer_set(MS_ENUMERATE);
+    while (!timer_passed(enumeration_timer)) {
+        usb_poll();
+    }
+
+    /*
+     * Note that while keyboard, mouse should enumerated easy, the
+     * serial comms can require a driver for *some operating systems*
+     *
+     * This means that if any enumeration succeeded, we are good to go!
+     */
+    if (!usb_ifs_enumerated) {
+        elog("enumeration failed");
+        scb_reset_system();
+    }
+
+    usb_enumeration_complete();
 
     while (1) {
         usb_poll();
@@ -73,6 +127,14 @@ main(void)
 
         if (keyboard_active) {
             matrix_process();
+        }
+
+        if (automouse_active) {
+            automouse_repeat();
+        }
+
+        if (macro_active) {
+            macro_run();
         }
     }
 }

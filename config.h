@@ -30,8 +30,8 @@
 
 #include "usb.h"
 
-#define SERIAL_BUF_SIZEIN (EP_SIZE_SERIALDATAOUT)
-#define SERIAL_BUF_SIZEOUT (EP_SIZE_SERIALDATAIN)
+#define SERIAL_BUF_SIZEIN  160
+#define SERIAL_BUF_SIZEOUT 1024
 
 /*
  * Matrix pinout definition:
@@ -53,7 +53,13 @@
 #define COLS_BV         0b11000111
 #define COLS_DECODE(x)  (((x >> 3) & 0b11000) | (x & 0b111))
 
-#define DEBOUNCE_MS     10
+#define LAYERS_NUM      1
+
+#define MS_DEBOUNCE     10
+#define MS_ENUMERATE    2000
+
+#define MACRO_MAXKEYS   10
+#define MACRO_MAXLEN    32
 
 #define LEDS_GPIO       GPIOC
 #define LEDS_RCC        RCC_GPIOC
@@ -61,5 +67,15 @@
 #define LED1IO          GPIO13
 #define LED2IO          GPIO14
 #define LED3IO          GPIO15
+
+#define HALF_GPIO       GPIOB
+#define HALF_I2C        I2C2
+#define HALF_RCC        RCC_GPIOB
+#define HALF_RCCI2C     RCC_I2C2
+
+#define HALF_MASTERID   0x10
+#define HALF_SLAVEID    0x20
+
+#define HALF_BV         (GPIO10 | GPIO11)
 
 #endif

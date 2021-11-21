@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2016 by Willem Dijkstra <wpd@xs4all.nl>.
+ * Copyright (c) 2015-2021 by Willem Dijkstra <wpd@xs4all.nl>.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,15 +24,19 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+#ifndef _COMMAND_H
+#define _COMMAND_H
 
-#ifndef _LOG_H
-#define _LOG_H
+#include "ring.h"
 
-#include <stdint.h>
-#include "serial.h"
+#define CMD_IDENTIFY      'i'
+#define CMD_KEYMAP_DUMP   'k'
+#define CMD_KEYMAP_SET    'K'
+#define CMD_MACRO_CLEAR   'm'
+#define CMD_MACRO_SET     'M'
+#define CMD_NKRO_CLEAR    'n'
+#define CMD_NKRO_SET      'N'
 
-void elog_start(const char *name, uint16_t line);
-
-#define elog elog_start(__FILE__, __LINE__), printfnl
+void command_process(struct ring *input_ring);
 
 #endif

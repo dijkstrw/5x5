@@ -32,6 +32,13 @@
 #include "usb.h"
 
 extern uint8_t mouse_idle;
+extern report_mouse_t mouse_state;
+
+#define MOUSE_BUTTON1  (1<<0)
+#define MOUSE_BUTTON2  (1<<1)
+#define MOUSE_BUTTON3  (1<<2)
+#define MOUSE_BUTTON4  (1<<3)
+#define MOUSE_BUTTON5  (1<<4)
 
 report_mouse_t *mouse_report(void);
 void mouse_event(event_t *event, bool pressed);

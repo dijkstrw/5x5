@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2016 by Willem Dijkstra <wpd@xs4all.nl>.
+ * Copyright (c) 2015-2021 by Willem Dijkstra <wpd@xs4all.nl>.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,15 +24,18 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
-#ifndef _LOG_H
-#define _LOG_H
+#ifndef _AUTOMOUSE_H
+#define _AUTOMOUSE_H
 
 #include <stdint.h>
-#include "serial.h"
+#include "keymap.h"
 
-void elog_start(const char *name, uint16_t line);
+extern volatile uint8_t automouse_active;
 
-#define elog elog_start(__FILE__, __LINE__), printfnl
+#define AUTOMOUSE_LED_ACTIVE   (1<<2)
+#define AUTOMOUSE_LED_PRESS    (1<<1)
+
+void automouse_event(event_t *event, bool pressed);
+void automouse_repeat(void);
 
 #endif

@@ -34,24 +34,24 @@
 
 #include "mouse.h"
 
-static report_mouse_t state;
+report_mouse_t mouse_state;
 uint8_t mouse_idle = 0;
 
 report_mouse_t *
 mouse_report()
 {
-    return &state;
+    return &mouse_state;
 }
 
 void
 mouse_event(event_t *event, bool pressed)
 {
     if (pressed) {
-        state.buttons = event->mouse.button;
-        state.x = event->mouse.x;
-        state.y = event->mouse.y;
-        state.h = state.v = 0;
-        usb_update_mouse(&state);
+        mouse_state.buttons = event->mouse.button;
+        mouse_state.x = event->mouse.x;
+        mouse_state.y = event->mouse.y;
+        mouse_state.h = mouse_state.v = 0;
+        usb_update_mouse(&mouse_state);
     }
 }
 
@@ -59,10 +59,10 @@ void
 wheel_event(event_t *event, bool pressed)
 {
     if (pressed) {
-        state.buttons = event->wheel.button;
-        state.h = event->wheel.h;
-        state.v = event->wheel.v;
-        state.x = state.y = 0;
-        usb_update_mouse(&state);
+        mouse_state.buttons = event->wheel.button;
+        mouse_state.h = event->wheel.h;
+        mouse_state.v = event->wheel.v;
+        mouse_state.x = mouse_state.y = 0;
+        usb_update_mouse(&mouse_state);
     }
 }

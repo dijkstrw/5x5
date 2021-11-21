@@ -14,6 +14,8 @@ supports:
 - system / consumer codes
 - generation of mouse events
 - usb serial interface
+- an automouse mode for fast-clicking
+- ephemeral programmable macro keys via serial
 
 The board is programmed using a 6-pin TagConnect, that must be wired to a STM
 Discovery SWD/STLink programming port. Note that the PCB includes footprints

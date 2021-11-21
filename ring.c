@@ -69,7 +69,7 @@ ring_read(ring_t *ring, uint8_t *data, ring_size_t size)
 }
 
 int32_t
-ring_read_contineous(ring_t *ring, uint8_t **data)
+ring_read_contineous(ring_t *ring, uint8_t **data, ring_size_t maxlen)
 {
     int32_t i;
 
@@ -79,10 +79,20 @@ ring_read_contineous(ring_t *ring, uint8_t **data)
         return 0;
     } else if (ring->begin > ring->end) {
         i = ring->size - ring->begin;
-        ring->begin = 0;
+        if (i > maxlen) {
+            ring->begin += maxlen;
+            i = maxlen;
+        } else {
+            ring->begin = 0;
+        }
     } else if (ring->begin < ring->end) {
         i = ring->end - ring->begin;
-        ring->begin = ring->end;
+        if (i > maxlen) {
+            ring->begin += maxlen;
+            i = maxlen;
+        } else {
+            ring->begin = ring->end;
+        }
     }
 
     return i;
@@ -98,4 +108,17 @@ uint32_t
 ring_marklen(ring_t *ring, uint32_t mark)
 {
     return (((ring->end - mark) + ring->size) % ring->size);
+}
+
+void
+ring_skip_line(struct ring *ring)
+{
+    uint8_t c;
+
+    while (ring_read_ch(ring, &c) != -1) {
+        if ((c == '\n') ||
+            (c == '\r')) {
+            return;
+        }
+    }
 }

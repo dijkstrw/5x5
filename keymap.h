@@ -36,7 +36,8 @@
  * |    0001|        |extra key        |
  * |    0010|buttons |x       |y       |
  * |    0011|buttons |h       |v       |
- * |    0100|layer select              |
+ * |    0100|buttons |x       |y       |
+ * |    0101|layer select              |
  * |--------+--------+--------+--------|
  */
 
@@ -64,6 +65,11 @@ typedef struct {
         } __attribute__ ((packed)) mouse;
         struct {
             uint8_t button;
+            int8_t times;
+            int8_t wiggle;
+        } __attribute__ ((packed)) automouse;
+        struct {
+            uint8_t button;
             int8_t h;
             int8_t v;
         } __attribute__ ((packed)) wheel;
@@ -71,31 +77,52 @@ typedef struct {
             uint8_t empty3;
             uint8_t empty4;
             uint8_t number;
+        } __attribute__ ((packed)) macro;
+        struct {
+            uint8_t empty5;
+            uint8_t empty6;
+            uint8_t number;
         } __attribute__ ((packed)) layer;
+        struct {
+            uint8_t num1;
+            uint8_t num2;
+            uint8_t num3;
+        } __attribute__ ((packed)) args;
     };
 } __attribute__ ((packed)) event_t;
 
 extern event_t keymap[][ROWS_NUM][COLS_NUM];
 
 enum {
+    KMT_NONE = 0,
+
+    KMT_AUTOMOUSE,
+    KMT_CONSUMER,
     KMT_KEY,
     KMT_LAYER,
-    KMT_CONSUMER,
-    KMT_SYSTEM,
+    KMT_MACRO,
     KMT_MOUSE,
+    KMT_SYSTEM,
     KMT_WHEEL
 };
 
-#define _K(Key)        {.type = KMT_KEY, .key = { .empty1 = 0, .mod = 0, .code = KEY_##Key }}
-#define _KC(Code)      {.type = KMT_KEY, .key = { .empty1 = 0, .mod = 0, .code = 0x##Code }}
-#define _S(Mod)        {.type = KMT_KEY, .key = { .empty1 = 0, .code = 0, .mod = Mod }}
-#define _M(X,Y)        {.type = KMT_MOUSE, .mouse = {.button = 0, .x = X, .y = Y }}
-#define _B(Button)     {.type = KMT_MOUSE, .mouse = {.button = Button, .x = 0, .y = 0}}
-#define _W(H,V)        {.type = KMT_WHEEL, .wheel = {.button = 0, .h = H, .v = V }}
-#define _C(Key)        {.type = KMT_CONSUMER, .extra = { .empty2 = 0, .code = CONSUMER_##Key }}
-#define _Y(Key)        {.type = KMT_SYSTEM, .extra = { .empty2 = 0, .code = SYSTEM_##Key }}
-#define _L(Layer)      {.type = KMT_LAYER, .layer = { .number = Layer }}
+#define _AM(Button,Times,Wiggle)  {.type = KMT_AUTOMOUSE, .automouse = {.button = Button, .times = Times, .wiggle = Wiggle }}
+#define _B(Button)                {.type = KMT_MOUSE, .mouse = {.button = Button, .x = 0, .y = 0}}
+#define _C(Key)                   {.type = KMT_CONSUMER, .extra = { .code = CONSUMER_##Key }}
+#define _K(Key)                   {.type = KMT_KEY, .key = { .mod = 0, .code = KEY_##Key }}
+#define _KC(Code)                 {.type = KMT_KEY, .key = { .mod = 0, .code = 0x##Code }}
+#define _KM(Mod, Key)             {.type = KMT_KEY, .key = { .mod = KEY_##Mod, .code = KEY_##Key }}
+#define _L(Layer)                 {.type = KMT_LAYER, .layer = { .number = Layer }}
+#define _M(X,Y)                   {.type = KMT_MOUSE, .mouse = {.button = 0, .x = X, .y = Y }}
+#define _MA(Number)               {.type = KMT_MACRO, .macro = { .number = Number }}
+#define _S(Mod)                   {.type = KMT_KEY, .key = { .code = 0, .mod = Mod }}
+#define _W(H,V)                   {.type = KMT_WHEEL, .wheel = {.button = 0, .h = H, .v = V }}
+#define _Y(Key)                   {.type = KMT_SYSTEM, .extra = { .code = SYSTEM_##Key }}
 
+extern uint8_t layer;
+
+void keymap_dump(void);
+void keymap_set(uint8_t layer, uint8_t row, uint8_t column, event_t *event);
 void keymap_event(uint16_t row, uint16_t col, bool pressed);
 
 #endif

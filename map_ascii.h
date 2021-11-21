@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2016 by Willem Dijkstra <wpd@xs4all.nl>.
+ * Copyright (c) 2021 by Willem Dijkstra <wpd@xs4all.nl>.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -25,14 +25,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef _LOG_H
-#define _LOG_H
+#ifndef _MAP_ASCII
 
-#include <stdint.h>
-#include "serial.h"
-
-void elog_start(const char *name, uint16_t line);
-
-#define elog elog_start(__FILE__, __LINE__), printfnl
+event_t *map_ascii_to_event(uint8_t c);
 
 #endif

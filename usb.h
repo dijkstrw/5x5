@@ -129,17 +129,31 @@ typedef union {
     };
 } __attribute__ ((packed)) report_nkro_t;
 
+extern const char *usb_strings[];
 
 extern volatile uint32_t usb_ms;
+extern volatile uint32_t usb_ifs_enumerated;
+extern volatile uint8_t usb_ep_keyboard_idle;
+extern volatile uint8_t usb_ep_mouse_idle;
+extern volatile uint8_t usb_ep_nkro_idle;
+extern volatile uint8_t usb_ep_extrakey_idle;
+extern volatile uint8_t usb_ep_serial_idle;
 
 void usb_init(void);
 void usb_poll(void);
 uint32_t usb_now(void);
 
+void usb_enumeration_complete(void);
+void usb_reset(void);
+void usb_resume(void);
+void usb_suspend(void);
+
 void usb_update_keyboard(report_keyboard_t *);
 void usb_update_mouse(report_mouse_t *);
 void usb_update_extrakey(report_extrakey_t *);
 void usb_update_nkro(report_nkro_t *);
+
+void usb_endpoint_idle(usbd_device *dev, uint8_t ep);
 
 void cdcacm_data_rx_cb(usbd_device *dev, uint8_t ep);
 void cdcacm_data_wx(uint8_t *buf, uint16_t len);

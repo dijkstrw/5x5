@@ -80,26 +80,25 @@ keyboard_set_leds(uint8_t leds)
 void
 keyboard_event(event_t *event, bool pressed)
 {
+    uint8_t mod = event->key.mod;
     uint8_t key = event->key.code;
 
-    elog("key %02x %d\n", key, pressed);
+    elog("key %02x %02x %d", mod, key, pressed);
 
-    switch (key) {
-    case KEY_LCTRL ... KEY_RGUI:
+    if (mod) {
         if (pressed) {
-            keyboard_add_modifier(key);
+            keyboard_add_modifier(mod);
         } else {
-            keyboard_del_modifier(key);
+            keyboard_del_modifier(mod);
         }
-        break;
+    }
 
-    default:
+    if (key) {
         if (pressed) {
             keyboard_add_key(key);
         } else {
             keyboard_del_key(key);
         }
-        break;
     }
 
     if (keyboard_dirty) {

@@ -50,7 +50,7 @@ extrakey_consumer_event(event_t *event, bool pressed)
 {
     state.id = REPORTID_CONSUMER;
 
-    elog("extrakey consumer %04x %d\n", event->extra.code, pressed);
+    elog("extrakey consumer %04x %d", event->extra.code, pressed);
 
     if (pressed) {
         state.codel = event->extra.code & 0xff;
@@ -67,7 +67,7 @@ extrakey_system_event(event_t *event, bool pressed)
 {
     state.id = REPORTID_SYSTEM;
 
-    elog("extrakey consumer %04x %d\n", event->extra.code, pressed);
+    elog("extrakey system %04x %d", event->extra.code, pressed);
 
     if (pressed) {
         state.codel = event->extra.code & 0xff;

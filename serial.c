@@ -69,16 +69,13 @@
 #include "config.h"
 #include "ring.h"
 #include "serial.h"
-#include "matrix.h"
+#include "command.h"
 
 static struct ring output_ring;
 static struct ring input_ring;
 static uint8_t input_buffer[SERIAL_BUF_SIZEIN];
 static uint8_t output_buffer[SERIAL_BUF_SIZEOUT];
 bool serial_active;
-static uint32_t timer_out = 0;
-
-extern uint8_t show_matrix;
 
 void
 serial_init()
@@ -88,21 +85,31 @@ serial_init()
     serial_active = false;
 }
 
-extern bool nkro_active;
-
 void
 serial_in(uint8_t *buf, uint16_t len)
 {
-    ring_write(&input_ring, buf, len);
+    uint16_t i;
+    uint8_t eol = 0;
+    uint8_t c;
 
-    if (buf && len > 0) {
-        if (buf[0] == 'n')
-            nkro_active ^= 1;
-        if (buf[0] == 'm')
-            show_matrix ^= 1;
+    for (i = 0; i < len; i++) {
+        c = *(buf + i);
+        ring_write_ch(&input_ring, c);
+        ring_write_ch(&output_ring, c);
+
+        /* emit additional linefeed for terminals that give us carriage returns */
+        if (c == '\r') {
+            ring_write_ch(&output_ring, '\n');
+        }
+
+        /* have we seen an end of line */
+        eol |= ((c == '\n') | (c == '\r'));
     }
 
-    printf("nkro %d\r", nkro_active);
+    if (eol) {
+        /* line received, decode command */
+        command_process(&input_ring);
+    }
 }
 
 void
@@ -110,22 +117,19 @@ serial_out()
 {
     uint8_t *buf;
     int32_t len;
-    uint32_t now = usb_now();
 
-    if (timer_out == now)
-        return;
+    if (usb_ep_serial_idle) {
+        if (RING_EMPTY(&output_ring))
+            return;
 
-    if (RING_EMPTY(&output_ring))
-        return;
-
-    len = ring_read_contineous(&output_ring, &buf);
-    cdcacm_data_wx(buf, len);
-    timer_out = now;
+        len = ring_read_contineous(&output_ring, &buf, EP_SIZE_SERIALDATAOUT);
+        cdcacm_data_wx(buf, len);
+    }
 }
 
 static uint32_t
 itoa(int32_t value, uint32_t radix, uint32_t uppercase, uint32_t unsig,
-          char *buffer, uint32_t zero_pad)
+     char *buffer, uint32_t zero_pad)
 {
     char *pbuffer = buffer;
     int32_t negative = 0;
@@ -240,6 +244,22 @@ printf(const char *fmt, ...)
     va_list va;
     va_start(va, fmt);
     ret = vrprintf(&output_ring, fmt, va);
+    va_end(va);
+
+    return ret;
+}
+
+int
+printfnl(const char *fmt, ...)
+{
+    int ret;
+    va_list va;
+    va_start(va, fmt);
+    ret = vrprintf(&output_ring, fmt, va);
+
+    ring_write_ch(&output_ring, '\n');
+    ring_write_ch(&output_ring, '\r');
+
     va_end(va);
 
     return ret;

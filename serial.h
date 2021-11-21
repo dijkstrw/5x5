@@ -38,6 +38,7 @@ void serial_init(void);
 void serial_in(uint8_t *buf, uint16_t len);
 void serial_out(void);
 int printf(const char *fmt, ...);
+int printfnl(const char *fmt, ...);
 int puts(const char *s);
 
 #endif
