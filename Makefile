@@ -1,16 +1,30 @@
 BINARY = 5x5
-OBJS = automouse.o clock.o command.o debug.o elog.o extrakey.o		\
+OBJS = 5x5.o automouse.o clock.o command.o debug.o elog.o extrakey.o	\
        keyboard.o keymap.o led.o macro.o matrix.o mouse.o map_ascii.o	\
        ring.o serial.o usb.o
 
-GOJIRA_VERSION = $(shell git describe --tags --always)
-CFLAGS = -DGOJIRA_VERSION='"$(GOJIRA_VERSION)"'
-OPENCM3_DIR = libopencm3
-STLINK_PORT = 4242
-OPENOCD_PORT = 3333
-BMP_PORT = /dev/ttyACM0
-LDSCRIPT = stm32f103x8.ld
-include libopencm3.stm32f1.mk
+GOJIRA_VERSION   = $(shell git describe --tags --always)
+
+DEVICE           = stm32f103c8t6
+CPPFLAGS        += -MD
+CFLAGS           = -DGOJIRA_VERSION='"$(GOJIRA_VERSION)"' -g -mfix-cortex-m3-ldrd
+LDFLAGS         += -static -nostartfiles
+LDLIBS          += -Wl,--start-group -lc -lgcc -lnosys -Wl,--end-group
+OPENCM3_DIR      = libopencm3
+
+STLINK_PORT      = 4242
+OPENOCD_PORT     = 3333
+BMP_PORT         = /dev/ttyACM0
+
+include $(OPENCM3_DIR)/mk/genlink-config.mk
+include $(OPENCM3_DIR)/mk/gcc-config.mk
+
+.PHONY: clean all
+
+all: $(BINARY).elf
+
+clean:
+	$(Q)$(RM) -rf $(BINARY).elf $(BINARY).bin $(BINARY).list $(BINARY).map *.o *.d generated.*
 
 flash: flash_stlink
 
@@ -31,16 +45,20 @@ flash_oocd: $(BINARY).hex
 debug: debug_oocd
 
 .gdb_config_oocd:
-	echo -e > .gdb_config_oocd "file $(BINARY).elf\ntarget remote :$(OPENOCD_PORT)\nbreak main\n"
+	echo > .gdb_config_oocd "file $(BINARY).elf\ntarget remote :$(OPENOCD_PORT)\nbreak main\n"
 
-debug_oocd: .gdb_config_oocd
+debug_oocd: .gdb_config_oocd $(BINARY).elf
 	openocd -f interface/stlink-v2-1.cfg \
 		-f target/stm32f1x_stlink.cfg &
 	$(GDB) --command=.gdb_config_oocd
-	pkill -9 openocd
+	pkill openocd
 
 .gdb_config_bmp:
 	echo > .gdb_config "file $(BINARY).elf\ntarget extended-remote $(BMP_PORT)\nmonitor version\nmonitor swdp_scan\nattach 1\nbreak main\nset mem inaccessible-by-default off\n"
 
-debug_bmp: .gdb_config_bmp
+debug_bmp: .gdb_config_bmp $(BINARY).elf
 	$(GDB) --command=.gdb_config
+	pkill openocd
+
+include $(OPENCM3_DIR)/mk/genlink-rules.mk
+include $(OPENCM3_DIR)/mk/gcc-rules.mk

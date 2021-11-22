@@ -1,1 +1,0 @@
-libopencm3/lib/stm32/f1/libopencm3_stm32f1.ld
