@@ -84,6 +84,9 @@
 #define REPORTID_SYSTEM                         1
 #define REPORTID_CONSUMER                       2
 
+#define CDC_CONTROL_LINE_STATE_DTR              1
+#define CDC_CONTROL_LINE_STATE_RTS              2
+
 #define SEND_RETRIES                           10
 
 /*

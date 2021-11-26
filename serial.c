@@ -95,12 +95,6 @@ serial_in(uint8_t *buf, uint16_t len)
     for (i = 0; i < len; i++) {
         c = *(buf + i);
         ring_write_ch(&input_ring, c);
-        ring_write_ch(&output_ring, c);
-
-        /* emit additional linefeed for terminals that give us carriage returns */
-        if (c == '\r') {
-            ring_write_ch(&output_ring, '\n');
-        }
 
         /* have we seen an end of line */
         eol |= ((c == '\n') | (c == '\r'));

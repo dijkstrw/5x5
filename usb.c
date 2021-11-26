@@ -560,7 +560,7 @@ static const struct usb_interface_descriptor cdc_comm_iface[] = {{
     .bNumEndpoints = 1,
     .bInterfaceClass = USB_CLASS_CDC,
     .bInterfaceSubClass = USB_CDC_SUBCLASS_ACM,
-    .bInterfaceProtocol = USB_CDC_PROTOCOL_AT,
+    .bInterfaceProtocol = USB_CDC_PROTOCOL_NONE,
     .iInterface = STRI_COMMAND,
 
     .endpoint = comm_endpoint,
@@ -787,9 +787,18 @@ usb_control_request(usbd_device *dev, struct usb_setup_data *req, uint8_t **buf,
             keyboard_set_protocol(req->wValue);
             return USBD_REQ_HANDLED;
         }
-    } else if ((req->bRequest == USB_CDC_REQ_SET_CONTROL_LINE_STATE) ||
-               (req->bRequest == USB_CDC_REQ_SET_LINE_CODING)) {
+    } else if (req->bRequest == USB_CDC_REQ_SET_LINE_CODING) {
         usb_ifs_enumerated |= (1 << IF_SERIALCOMM);
+        return USBD_REQ_HANDLED;
+    } else if (req->bRequest == USB_CDC_REQ_SET_CONTROL_LINE_STATE) {
+        if (req->wValue & (CDC_CONTROL_LINE_STATE_DTR |
+                           CDC_CONTROL_LINE_STATE_RTS)) {
+            usb_ep_serial_idle = 1;
+            elog("serial attached");
+        } else {
+            /* serial detached */
+            usb_ep_serial_idle = 0;
+        }
         return USBD_REQ_HANDLED;
     }
     return USBD_REQ_NEXT_CALLBACK;
@@ -910,7 +919,7 @@ usb_init(void)
 {
     usb_ms = 0;
     usb_ifs_enumerated = 0;
-    usb_ep_serial_idle = 1;
+    usb_ep_serial_idle = 0;
     usb_ep_extrakey_idle = 1;
     usb_ep_keyboard_idle = 1;
     usb_ep_mouse_idle = 1;
@@ -961,6 +970,7 @@ usb_endpoint_idle(usbd_device *dev, uint8_t ep)
             usb_ep_serial_idle = 1;
             break;
     }
+    USB_CLR_EP_RX_CTR(ep);
 }
 
 void
@@ -970,6 +980,13 @@ cdcacm_data_rx_cb(usbd_device *dev, uint8_t ep)
 
     uint16_t len;
     char serialbuf[EP_SIZE_SERIALDATAOUT] __attribute__((aligned));
+    uint16_t istr = *USB_ISTR_REG;
+
+    /* Handle trouble like remote going away */
+    if (istr & USB_ISTR_ERR) {
+        USB_CLR_ISTR_ERR();
+        return;
+    }
 
     len = usbd_ep_read_packet(dev,
                               USB_ENDPOINT_ADDR_OUT(EP_SERIALDATAOUT),
