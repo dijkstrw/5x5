@@ -541,7 +541,7 @@ static const struct {
         .bFunctionLength = sizeof(struct usb_cdc_acm_descriptor),
         .bDescriptorType = CS_INTERFACE,
         .bDescriptorSubtype = USB_CDC_TYPE_ACM,
-        .bmCapabilities = 0,
+        .bmCapabilities = 2,
     },
     .cdc_union = {
         .bFunctionLength = sizeof(struct usb_cdc_union_descriptor),
@@ -915,6 +915,18 @@ usb_now(void)
 uint8_t usbd_control_buffer[256] __attribute__((aligned));
 
 void
+usb_prevent_enumeration(void)
+{
+    /*
+     * Pull the USB DP low, so the host does not start to enumerate us
+     * until we have had time to setup our environment.
+     */
+    rcc_periph_clock_enable(USB_RCC);
+    gpio_set_mode(USB_GPIO, GPIO_MODE_OUTPUT_2_MHZ, GPIO_CNF_OUTPUT_PUSHPULL, USB_BV);
+    gpio_clear(USB_GPIO, USB_BV);
+}
+
+void
 usb_init(void)
 {
     usb_ms = 0;
@@ -939,6 +951,9 @@ usb_init(void)
 
     nvic_enable_irq(NVIC_USB_LP_CAN_RX0_IRQ);
     nvic_enable_irq(NVIC_USB_WAKEUP_IRQ);
+
+    /* Restore usb pins to default operation, start enumeration */
+    gpio_set_mode(USB_GPIO, GPIO_MODE_INPUT, GPIO_CNF_INPUT_FLOAT, USB_BV);
 }
 
 void

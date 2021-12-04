@@ -30,6 +30,9 @@
 
 #include "usb.h"
 
+#define USB_GPIO       GPIOA
+#define USB_RCC        RCC_GPIOA
+#define USB_BV         (GPIO12)
 #define SERIAL_BUF_SIZEIN  160
 #define SERIAL_BUF_SIZEOUT 1024
 

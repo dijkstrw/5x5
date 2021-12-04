@@ -90,6 +90,9 @@ main(void)
     uint32_t enumeration_timer;
 
     mcu_init();
+
+    usb_prevent_enumeration();
+
     clock_init();
     serial_init();
     led_init();
