@@ -107,8 +107,13 @@ currently only 7-bit ascii strings are supported.
 
 Setting macros via the shell is easy:
 
-    echo -e "\nM01nevergonnagiveyouup\n" > /dev/ttyACM0
+    echo -e "\nM01Nevergonnagiveyouup!\n" > /dev/ttyACM0
 
-Note that the initial newline is a trick to make sure our M will be
-considered the start of a command, no matter what has been put to the
-serial before by you, some driver or the os.
+Notes:
+
+- The initial newline is a trick to make sure our M will be considered
+  the start of a command, no matter what has been put to the serial
+  before by you, some driver or the os.
+- This particular example defines the macro for macro key number 1.
+- You need to have a macro key 1 in your keymap, otherwise you have
+  nothing to trigger the macro.
