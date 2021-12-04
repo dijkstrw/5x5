@@ -936,10 +936,19 @@ usb_init(void)
     usbd_register_resume_callback(usbd_dev, usb_resume);
     usbd_register_sof_callback(usbd_dev, usb_sof);
     usbd_register_suspend_callback(usbd_dev, usb_suspend);
+
+    nvic_enable_irq(NVIC_USB_LP_CAN_RX0_IRQ);
+    nvic_enable_irq(NVIC_USB_WAKEUP_IRQ);
 }
 
 void
-usb_poll(void)
+usb_lp_can_rx0_isr(void)
+{
+    usbd_poll(usbd_dev);
+}
+
+void
+usb_wakeup_isr(void)
 {
     usbd_poll(usbd_dev);
 }

@@ -31,7 +31,6 @@
  * Entrypoint and mainloop for the 5x5 keyboard.
  * - Setup usb for enumeration after reset
  * - Once enumeration is complete, contineously call:
- *   - usb_poll to recieve serial input and leds states
  *   - matrix_process to detect and process matrix events
  *   - serial_out to write output
  */
@@ -102,7 +101,7 @@ main(void)
 
     enumeration_timer = timer_set(MS_ENUMERATE);
     while (!timer_passed(enumeration_timer)) {
-        usb_poll();
+        __asm__("nop");
     }
 
     /*
@@ -119,8 +118,6 @@ main(void)
     usb_enumeration_complete();
 
     while (1) {
-        usb_poll();
-
         if (serial_active) {
             serial_out();
         }

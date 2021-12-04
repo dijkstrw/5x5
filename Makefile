@@ -19,9 +19,9 @@ BMP_PORT         = /dev/ttyACM0
 include $(OPENCM3_DIR)/mk/genlink-config.mk
 include $(OPENCM3_DIR)/mk/gcc-config.mk
 
-.PHONY: clean all
-
 all: $(BINARY).elf
+
+.PHONY: all clean
 
 clean:
 	$(Q)$(RM) -rf $(BINARY).elf $(BINARY).bin $(BINARY).list $(BINARY).map *.o *.d generated.*

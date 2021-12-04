@@ -145,7 +145,6 @@ extern volatile uint8_t usb_ep_extrakey_idle;
 extern volatile uint8_t usb_ep_serial_idle;
 
 void usb_init(void);
-void usb_poll(void);
 uint32_t usb_now(void);
 
 void usb_enumeration_complete(void);
