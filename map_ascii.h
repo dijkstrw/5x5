@@ -26,7 +26,8 @@
  */
 
 #ifndef _MAP_ASCII
+#define _MAP_ASCII
 
 event_t *map_ascii_to_event(uint8_t c);
 
-#endif
+#endif /* _MAP_ASCII */

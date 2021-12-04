@@ -78,4 +78,4 @@
 
 #define HALF_BV         (GPIO10 | GPIO11)
 
-#endif
+#endif /* _CONFIG_H */

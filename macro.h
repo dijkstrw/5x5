@@ -40,4 +40,4 @@ void macro_set_phrase(uint8_t key, uint8_t *phrase, uint8_t size);
 void macro_event(event_t *event, bool pressed);
 void macro_run(void);
 
-#endif
+#endif /* _MACRO_H */

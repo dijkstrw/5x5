@@ -36,4 +36,4 @@ uint32_t clock_now(void);
 uint32_t timer_set(uint32_t delay);
 bool timer_passed(uint32_t timer);
 
-#endif
+#endif /* _CLOCK_H */

@@ -24,8 +24,10 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 #ifndef _USB_H
 #define _USB_H
+
 #include <libopencm3/usb/usbd.h>
 
 /*
@@ -161,4 +163,4 @@ void usb_endpoint_idle(usbd_device *dev, uint8_t ep);
 void cdcacm_data_rx_cb(usbd_device *dev, uint8_t ep);
 void cdcacm_data_wx(uint8_t *buf, uint16_t len);
 
-#endif
+#endif /* _USB_H */

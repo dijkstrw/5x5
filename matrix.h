@@ -43,4 +43,4 @@ void matrix_process(void);
 void matrix_event(uint16_t row, uint16_t col, bool pressed);
 void matrix_debug(void);
 
-#endif
+#endif /* _MATRIX_H */

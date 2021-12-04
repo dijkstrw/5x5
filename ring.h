@@ -24,6 +24,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 #ifndef _RING_H
 #define _RING_H
 
@@ -51,4 +52,5 @@ int32_t ring_read_contineous(ring_t *ring, uint8_t **data, ring_size_t maxlen);
 uint32_t ring_mark(ring_t *ring);
 uint32_t ring_marklen(ring_t *ring, uint32_t mark);
 void ring_skip_line(struct ring *ring);
-#endif
+
+#endif /* _RING_H */

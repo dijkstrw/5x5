@@ -32,4 +32,4 @@
 void led_init(void);
 void led_set(uint8_t leds);
 
-#endif
+#endif /* _LED_H */

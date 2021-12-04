@@ -25,11 +25,12 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifndef _HID_H
+#define _HID_H
+
 /*
  * USB magic numbers used in hid requests
  */
-#ifndef _HID_H
-#define _HID_H
 
 /* HID Class specific bRequest */
 #define USBHID_REQ_GET_REPORT    0x01

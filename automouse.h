@@ -24,6 +24,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 #ifndef _AUTOMOUSE_H
 #define _AUTOMOUSE_H
 
@@ -38,4 +39,4 @@ extern volatile uint8_t automouse_active;
 void automouse_event(event_t *event, bool pressed);
 void automouse_repeat(void);
 
-#endif
+#endif /* _AUTOMOUSE_H */

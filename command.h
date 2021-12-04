@@ -24,6 +24,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 #ifndef _COMMAND_H
 #define _COMMAND_H
 
@@ -39,4 +40,4 @@
 
 void command_process(struct ring *input_ring);
 
-#endif
+#endif /* _COMMAND_H */

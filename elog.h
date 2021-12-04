@@ -35,4 +35,4 @@ void elog_start(const char *name, uint16_t line);
 
 #define elog elog_start(__FILE__, __LINE__), printfnl
 
-#endif
+#endif /* _LOG_H */

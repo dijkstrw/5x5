@@ -48,4 +48,4 @@ extern uint8_t nkro_idle;
 extern bool nkro_active;
 report_nkro_t *nkro_report(void);
 
-#endif
+#endif /* _KEYBOARD_H */

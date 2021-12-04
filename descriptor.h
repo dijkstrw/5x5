@@ -119,4 +119,5 @@
 #define ID_IP_NONE                              0
 #define ID_IP_KEYBOARD                          1
 #define ID_IP_MOUSE                             2
-#endif
+
+#endif /* _DESCRIPTOR_H */

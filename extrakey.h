@@ -38,4 +38,4 @@ report_extrakey_t *extrakey_report(void);
 void extrakey_consumer_event(event_t *event, bool pressed);
 void extrakey_system_event(event_t *event, bool pressed);
 
-#endif
+#endif /* _EXTRAKEY_H */

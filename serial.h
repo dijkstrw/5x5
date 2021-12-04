@@ -24,6 +24,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 #ifndef _SERIAL_H
 #define _SERIAL_H
 
@@ -41,4 +42,4 @@ int printf(const char *fmt, ...);
 int printfnl(const char *fmt, ...);
 int puts(const char *s);
 
-#endif
+#endif /* _SERIAL_H */

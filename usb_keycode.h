@@ -555,4 +555,5 @@ enum hid_consumer_usage {
     CONSUMER_AC_FORWARDMSG = 0x28b,
     CONSUMER_AC_SEND,
 };
-#endif
+
+#endif /* _KEYCODE_H */
