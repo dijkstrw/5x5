@@ -507,14 +507,14 @@ static const struct usb_endpoint_descriptor data_endpoint[] = {{
     .bEndpointAddress = USB_ENDPOINT_ADDR_OUT(EP_SERIALDATAOUT),
     .bmAttributes = USB_ENDPOINT_ATTR_BULK,
     .wMaxPacketSize = EP_SIZE_SERIALDATAOUT,
-    .bInterval = 0x0a,
+    .bInterval = 1,
     }, {
     .bLength = USB_DT_ENDPOINT_SIZE,
     .bDescriptorType = USB_DT_ENDPOINT,
     .bEndpointAddress = USB_ENDPOINT_ADDR_IN(EP_SERIALDATAIN),
     .bmAttributes = USB_ENDPOINT_ATTR_BULK,
     .wMaxPacketSize = EP_SIZE_SERIALDATAIN,
-    .bInterval = 0x0a,
+    .bInterval = 1,
     }};
 
 static const struct {
@@ -578,10 +578,21 @@ static const struct usb_interface_descriptor cdc_data_iface[] = {{
     .bInterfaceClass = USB_CLASS_DATA,
     .bInterfaceSubClass = 0,
     .bInterfaceProtocol = 0,
-    .iInterface = STRI_COMMAND,
+    .iInterface = 0,
 
     .endpoint = data_endpoint,
     }};
+
+static const struct usb_iface_assoc_descriptor cdc_assoc = {
+    .bLength = USB_DT_INTERFACE_ASSOCIATION_SIZE,
+    .bDescriptorType = USB_DT_INTERFACE_ASSOCIATION,
+    .bFirstInterface = IF_SERIALCOMM,
+    .bInterfaceCount = 2,
+    .bFunctionClass = USB_CLASS_CDC,
+    .bFunctionSubClass = USB_CDC_SUBCLASS_ACM,
+    .bFunctionProtocol = USB_CDC_PROTOCOL_NONE,
+    .iFunction = STRI_COMMAND,
+    };
 
 const struct usb_interface ifaces[] = {{
     .num_altsetting = 1,
@@ -596,7 +607,8 @@ const struct usb_interface ifaces[] = {{
     .num_altsetting = 1,
     .altsetting = &nkro_iface,
     }, {
-        .num_altsetting = 1,
+    .num_altsetting = 1,
+    .iface_assoc = &cdc_assoc,
     .altsetting = cdc_comm_iface,
     }, {
     .num_altsetting = 1,
@@ -606,10 +618,10 @@ const struct usb_interface ifaces[] = {{
 const struct usb_device_descriptor dev_descriptor = {
     .bLength = USB_DT_DEVICE_SIZE,
     .bDescriptorType = USB_DT_DEVICE,
-    .bcdUSB = 0x0110,
-    .bDeviceClass = 0,                     /* Each interface will specify its own class code */
-    .bDeviceSubClass = 0,
-    .bDeviceProtocol = 0,
+    .bcdUSB = 0x0200,
+    .bDeviceClass = 0xEF,      /* USB 2.0 ECN Interface Association Descriptor (IAD) */
+    .bDeviceSubClass = 0x02,   /* https://www.usb.org/sites/default/files/iadclasscode_r10.pdf */
+    .bDeviceProtocol = 0x01,
     .bMaxPacketSize0 = 64,
     .idVendor = 0xDEAD,
     .idProduct = 0xBEEF,

@@ -28,6 +28,18 @@
 #ifndef _KEYCODE_H
 #define _KEYCODE_H
 
+/**
+ * Modifier key bits
+ */
+#define MOD_LCTRL   0x01
+#define MOD_LSHIFT  0x02
+#define MOD_LALT    0x04
+#define MOD_LGUI    0x08
+#define MOD_RCTRL   0x10
+#define MOD_RSHIFT  0x20
+#define MOD_RALT    0x40
+#define MOD_RGUI    0x80
+
 /*
  * Keycode definitions as present in the usb hid usage tables, and as available
  * as valid key events for linux.
@@ -265,8 +277,6 @@ enum hid_keyboard_keypad_usage {
 
     /* 0xe8 - 0xff = Reserved */
 };
-
-#define MODIFIER_BIT(mod) (1<<(mod & 0x07))
 
 enum hid_system_usage {
 
