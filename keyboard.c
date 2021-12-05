@@ -172,8 +172,8 @@ keyboard_del_key(uint8_t key)
 void
 keyboard_add_modifier(uint8_t modifier)
 {
-    keyboard_state.mods |= MODIFIER_BIT(modifier);
-    nkro_state.mods |= MODIFIER_BIT(modifier);
+    keyboard_state.mods |= modifier;
+    nkro_state.mods |= modifier;
 
     if (nkro_active) {
         nkro_dirty = true;
@@ -185,8 +185,8 @@ keyboard_add_modifier(uint8_t modifier)
 void
 keyboard_del_modifier(uint8_t modifier)
 {
-    keyboard_state.mods &= ~MODIFIER_BIT(modifier);
-    nkro_state.mods &= ~MODIFIER_BIT(modifier);
+    keyboard_state.mods &= ~modifier;
+    nkro_state.mods &= ~modifier;
 
     if (nkro_active) {
         nkro_dirty = true;

@@ -111,7 +111,10 @@ enum {
 #define _C(Key)                   {.type = KMT_CONSUMER, .extra = { .code = CONSUMER_##Key }}
 #define _K(Key)                   {.type = KMT_KEY, .key = { .mod = 0, .code = KEY_##Key }}
 #define _KC(Code)                 {.type = KMT_KEY, .key = { .mod = 0, .code = 0x##Code }}
-#define _KM(Mod, Key)             {.type = KMT_KEY, .key = { .mod = KEY_##Mod, .code = KEY_##Key }}
+/* Example CTRL-D: _KM(LCTRL, D) */
+#define _KM(ModKey, Key)          {.type = KMT_KEY, .key = { .mod = MOD_##ModKey, .code = KEY_##Key }}
+/* Example CTRL-ALT-DEL: _KMB(MOD_LCTRL|MOD_LALT, DELETE) */
+#define _KMB(ModBits, Key)        {.type = KMT_KEY, .key = { .mod = ModBits, .code = KEY_##Key }}
 #define _L(Layer)                 {.type = KMT_LAYER, .layer = { .number = Layer }}
 #define _M(X,Y)                   {.type = KMT_MOUSE, .mouse = {.button = 0, .x = X, .y = Y }}
 #define _MA(Number)               {.type = KMT_MACRO, .macro = { .number = Number }}
