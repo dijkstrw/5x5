@@ -74,14 +74,12 @@ void
 usb_resume(void)
 {
     elog("usb resume");
-    keyboard_active = serial_active = true;
 }
 
 void
 usb_suspend(void)
 {
     elog("usb suspend");
-    keyboard_active = serial_active = false;
 }
 
 int
