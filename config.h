@@ -71,14 +71,8 @@
 #define LED2IO          GPIO14
 #define LED3IO          GPIO15
 
-#define HALF_GPIO       GPIOB
-#define HALF_I2C        I2C2
-#define HALF_RCC        RCC_GPIOB
-#define HALF_RCCI2C     RCC_I2C2
-
-#define HALF_MASTERID   0x10
-#define HALF_SLAVEID    0x20
-
-#define HALF_BV         (GPIO10 | GPIO11)
+#define AUTOMOUSE_LED_ACTIVE   (1<<2)
+#define AUTOMOUSE_LED_PRESS    (1<<1)
+#define MACRO_LED_ACTIVE       (1<<2)
 
 #endif /* _CONFIG_H */

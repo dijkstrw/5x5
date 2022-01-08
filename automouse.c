@@ -62,7 +62,7 @@ automouse_event(event_t *event, bool pressed)
     }
 
     if (!automouse_active) {
-        led_set(0);
+        led_clear(AUTOMOUSE_LED_ACTIVE | AUTOMOUSE_LED_PRESS);
     }
 }
 
@@ -79,13 +79,13 @@ automouse_repeat()
         automouse_press = (automouse_press ^ 1);
 
         if (automouse_press) {
-            led_set(AUTOMOUSE_LED_ACTIVE | AUTOMOUSE_LED_PRESS);
+            led_state(AUTOMOUSE_LED_ACTIVE | AUTOMOUSE_LED_PRESS);
             mouse_state.buttons = automouse_state.buttons;
             mouse_state.x = automouse_state.x;
             mouse_state.y = automouse_state.y;
         } else {
             mouse_state.buttons = 0;
-            led_set(AUTOMOUSE_LED_ACTIVE);
+            led_state(AUTOMOUSE_LED_ACTIVE);
             mouse_state.x = -automouse_state.x;
             mouse_state.y = -automouse_state.y;
         }

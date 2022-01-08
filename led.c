@@ -44,7 +44,33 @@ led_init(void)
 }
 
 void
+led_clear(uint8_t leds)
+{
+    if (leds & 0b001)
+        gpio_clear(LEDS_GPIO, LED1IO);
+
+    if (leds & 0b010)
+        gpio_clear(LEDS_GPIO, LED2IO);
+
+    if (leds & 0b100)
+        gpio_clear(LEDS_GPIO, LED3IO);
+}
+
+void
 led_set(uint8_t leds)
+{
+    if (leds & 0b001)
+        gpio_set(LEDS_GPIO, LED1IO);
+
+    if (leds & 0b010)
+        gpio_set(LEDS_GPIO, LED2IO);
+
+    if (leds & 0b100)
+        gpio_set(LEDS_GPIO, LED3IO);
+}
+
+void
+led_state(uint8_t leds)
 {
     if (leds & 0b001)
         gpio_set(LEDS_GPIO, LED1IO);

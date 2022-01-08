@@ -74,7 +74,7 @@ nkro_report()
 void
 keyboard_set_leds(uint8_t leds)
 {
-    led_set(leds);
+    led_state(leds);
 }
 
 void

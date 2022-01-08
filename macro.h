@@ -33,8 +33,6 @@
 
 extern volatile uint8_t macro_active;
 
-#define MACRO_LED_ACTIVE   (1<<2)
-
 void macro_init(void);
 void macro_set_phrase(uint8_t key, uint8_t *phrase, uint8_t size);
 void macro_event(event_t *event, bool pressed);

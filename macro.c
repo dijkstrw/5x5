@@ -171,7 +171,7 @@ macro_run()
     event_t *event;
 
     if (macro_active) {
-        led_set(MACRO_LED_ACTIVE);
+        led_state(MACRO_LED_ACTIVE);
         event = &macro_buffer[macro_key][macro_position];
         switch (macro_operation) {
             case MACRO_INIT:
@@ -191,7 +191,7 @@ macro_run()
                 macro_position++;
                 if (macro_position >= macro_len[macro_key]) {
                     macro_active = 0;
-                    led_set(0);
+                    led_clear(MACRO_LED_ACTIVE);
                 }
         }
     }

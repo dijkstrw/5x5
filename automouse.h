@@ -33,9 +33,6 @@
 
 extern volatile uint8_t automouse_active;
 
-#define AUTOMOUSE_LED_ACTIVE   (1<<2)
-#define AUTOMOUSE_LED_PRESS    (1<<1)
-
 void automouse_event(event_t *event, bool pressed);
 void automouse_repeat(void);
 

@@ -30,6 +30,8 @@
 #include "config.h"
 
 void led_init(void);
+void led_clear(uint8_t leds);
 void led_set(uint8_t leds);
+void led_state(uint8_t leds);
 
 #endif /* _LED_H */
