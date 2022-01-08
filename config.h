@@ -59,7 +59,7 @@
 #define LAYERS_NUM      1
 
 #define MS_DEBOUNCE     10
-#define MS_ENUMERATE    2000
+#define MS_ENUMERATE    5000
 
 #define MACRO_MAXKEYS   10
 #define MACRO_MAXLEN    32

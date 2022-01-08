@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2021 by Willem Dijkstra <wpd@xs4all.nl>.
+ * Copyright (c) 2015-2022 by Willem Dijkstra <wpd@xs4all.nl>.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -25,15 +25,6 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/*
- * 5x5
- *
- * Entrypoint and mainloop for the 5x5 keyboard.
- * - Setup usb for enumeration after reset
- * - Once enumeration is complete, contineously call:
- *   - matrix_process to detect and process matrix events
- *   - serial_out to write output
- */
 #include <libopencm3/cm3/scb.h>
 #include <libopencm3/stm32/rcc.h>
 
@@ -48,6 +39,8 @@
 #include "serial.h"
 #include "usb.h"
 
+static bool enumeration_active;
+
 static void
 mcu_init(void)
 {
@@ -58,16 +51,10 @@ mcu_init(void)
  * Usb Event handlers
  */
 void
-usb_enumeration_complete(void)
-{
-    keyboard_active = serial_active = true;
-}
-
-void
 usb_reset(void)
 {
     elog("usb reset");
-    keyboard_active = serial_active = false;
+    enumeration_active = true;
 }
 
 void
@@ -100,25 +87,39 @@ main(void)
 
     elog("initialized");
 
-    enumeration_timer = timer_set(MS_ENUMERATE);
-    while (!timer_passed(enumeration_timer)) {
-        __asm__("nop");
-    }
-
-    /*
-     * Note that while keyboard, mouse should enumerated easy, the
-     * serial comms can require a driver for *some operating systems*
-     *
-     * This means that if any enumeration succeeded, we are good to go!
-     */
-    if (!usb_ifs_enumerated) {
-        elog("enumeration failed");
-        scb_reset_system();
-    }
-
-    usb_enumeration_complete();
+    enumeration_active = true;
 
     while (1) {
+        if (enumeration_active) {
+            /*
+             * Note that this is the start state, but renewing
+             * enumeration can also be requested by the host at any
+             * time using an usb reset.
+             *
+             * This phase can complete partially. Keyboard and mouse
+             * are standard, but our serial comms could require a
+             * driver and not be enumerated succesfully.
+             */
+            usb_ifs_enumerated = 0;
+            enumeration_timer = timer_set(MS_ENUMERATE);
+            while ((usb_ifs_enumerated != ((1 << IF_KEYBOARD) |
+                                           (1 << IF_MOUSE)    |
+                                           (1 << IF_EXTRAKEY) |
+                                           (1 << IF_NKRO)     |
+                                           (1 << IF_SERIALCOMM))) &&
+                   (!timer_passed(enumeration_timer))) {
+                __asm__("nop");
+            }
+
+            if (!usb_ifs_enumerated) {
+                elog("enumeration failed");
+                scb_reset_system();
+            }
+
+            enumeration_active = false;
+            keyboard_active = serial_active = true;
+        }
+
         if (serial_active) {
             serial_out();
         }
