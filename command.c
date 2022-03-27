@@ -34,6 +34,9 @@
 #include "ring.h"
 #include "serial.h"
 #include "usb.h"
+#include "flash.h"
+
+static uint8_t flash_write_active = 0;
 
 static uint8_t
 hex_digit(uint8_t in)
@@ -110,7 +113,7 @@ command_set_macro(struct ring *input_ring)
             } else {
                 elog("macro with empty phrase");
             }
-        }
+       }
 
         buffer[len++] = c;
 
@@ -123,13 +126,64 @@ command_set_macro(struct ring *input_ring)
     elog("macro not closed of with eol");
 }
 
+static void
+command_flash_read()
+{
+    uint8_t data;
+
+    elog("reading flash");
+
+    if (!flash_read_start()) {
+        return;
+    }
+
+    data = flash_read_byte();
+    while (data != 0) {
+        elog("reading %02x", data);
+        serial_in(&data, 1);
+        data = flash_read_byte();
+    }
+
+    flash_read_stop();
+}
+
+static void
+command_flash_write()
+{
+    elog("writing flash");
+
+    if (!flash_write_start()) {
+        return;
+    }
+
+    if (nkro_active) {
+        flash_write_byte(CMD_NKRO_SET);
+    } else {
+        flash_write_byte(CMD_NKRO_CLEAR);
+    }
+    flash_write_byte('\n');
+
+    flash_write_stop();
+    /* macros */
+    /* keymap */
+}
+
 void
 command_process(struct ring *input_ring)
 {
     uint8_t c;
+    uint32_t data;
 
     while (ring_read_ch(input_ring, &c) != -1) {
         switch (c) {
+            case CMD_FLASH_READ:
+                command_flash_read();
+                break;
+
+            case CMD_FLASH_WRITE:
+                command_flash_write();
+                break;
+
             case CMD_IDENTIFY:
                 command_identify();
                 break;
@@ -169,6 +223,8 @@ command_process(struct ring *input_ring)
                 printfnl("Mnnstring        - set macro nn with string");
                 printfnl("n                - clear nkro");
                 printfnl("N                - set nkro");
+                printfnl("R                - read configuration from flash");
+                printfnl("W                - write configuration to flash");
                 break;
 
             default:

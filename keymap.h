@@ -125,6 +125,7 @@ enum {
 extern uint8_t layer;
 
 void keymap_dump(void);
+event_t *keymap_get(uint8_t layer, uint8_t row, uint8_t column);
 void keymap_set(uint8_t layer, uint8_t row, uint8_t column, event_t *event);
 void keymap_event(uint16_t row, uint16_t col, bool pressed);
 

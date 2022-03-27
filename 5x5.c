@@ -31,6 +31,7 @@
 #include "automouse.h"
 #include "clock.h"
 #include "elog.h"
+#include "flash.h"
 #include "keyboard.h"
 #include "led.h"
 #include "macro.h"
@@ -79,6 +80,7 @@ main(void)
     usb_prevent_enumeration();
 
     clock_init();
+    crc_init();
     serial_init();
     led_init();
     matrix_init();

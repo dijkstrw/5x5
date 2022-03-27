@@ -1,7 +1,7 @@
 BINARY = 5x5
 OBJS = 5x5.o automouse.o clock.o command.o debug.o elog.o extrakey.o	\
-       keyboard.o keymap.o led.o macro.o matrix.o mouse.o map_ascii.o	\
-       ring.o serial.o usb.o
+       flash.o keyboard.o keymap.o led.o macro.o matrix.o mouse.o	\
+       map_ascii.o ring.o serial.o usb.o
 
 GOJIRA_VERSION   = $(shell git describe --tags --always)
 
@@ -17,6 +17,7 @@ OPENOCD_PORT     = 3333
 BMP_PORT         = /dev/ttyACM0
 
 include $(OPENCM3_DIR)/mk/genlink-config.mk
+LDSCRIPT         = stm32f103c8t6.ld
 include $(OPENCM3_DIR)/mk/gcc-config.mk
 
 all: $(BINARY).elf

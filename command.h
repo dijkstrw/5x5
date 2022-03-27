@@ -30,6 +30,8 @@
 
 #include "ring.h"
 
+#define CMD_FLASH_READ    'R'
+#define CMD_FLASH_WRITE   'W'
 #define CMD_IDENTIFY      'i'
 #define CMD_KEYMAP_DUMP   'k'
 #define CMD_KEYMAP_SET    'K'

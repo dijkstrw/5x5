@@ -70,7 +70,7 @@ keymap_dump()
         for (r = 0; r < ROWS_NUM; r++) {
             printf("row %02x: ", r);
             for (c = 0; c < COLS_NUM; c++) {
-                e = &keymap[l][r][c];
+                e = keymap_get(l, r, c);
                 printf("%01x,%02x%02x%02x ",
                        e->type,
                        e->args.num1,
@@ -80,6 +80,19 @@ keymap_dump()
             printf("\n\r");
         }
     }
+}
+
+event_t *
+keymap_get(uint8_t l, uint8_t r, uint8_t c)
+{
+    if ((l > LAYERS_NUM) ||
+        (r > ROWS_NUM) ||
+        (c > COLS_NUM)) {
+        elog("keymap position out of bounds");
+        return 0;
+    }
+
+    return &keymap[l][r][c];
 }
 
 void
