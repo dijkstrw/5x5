@@ -29,45 +29,54 @@
  * flash
  *
  * User flash used for storing keymaps and macros.
- *
- * Hardware 32 bit word access is abstracted to a per-character interface.
- *
- * For writing to flash follow this procedure:
- * - flash_write_start  - unlock and erase flash, setup char interface
- * - flash_write_byte   - write one byte, do this upto 2k - 1 times
- * - flash_write_end    - write crc, lock flash, disable char interface
- *
- * For reading flash:
- * - flash_read_start   - setup char interface, check crc
- * - flash_read_byte    - read one byte, do this upto 2k - 1 times
- * - flash_read_end     - disable char interface
  */
 
 #include <stdint.h>
+#include <string.h>
+
+#include <libopencm3/cm3/cortex.h>
 #include <libopencm3/stm32/crc.h>
 #include <libopencm3/stm32/flash.h>
 #include <libopencm3/stm32/rcc.h>
 
+#include "config.h"
+#include "keymap.h"
+#include "keyboard.h"
+#include "macro.h"
 #include "elog.h"
 
-/*
- * STM32 flash page size depends on the device:
- * stm32f103xx, with < 128k flash = 1k
- */
-#define FLASH_PAGE_NUM          4
-#define FLASH_PAGE_SIZE         0x400
-#define FLASH_LEN               (FLASH_PAGE_NUM * FLASH_PAGE_SIZE)
-#define FLASH_LEN_CRC           (FLASH_LEN - sizeof(uint32_t))
+#if MACRO_MAXKEYS % 4
+/* flash reads and writes are in 4 byte increments. While other values
+ * will work, they can clobber whatever is allocated right next to
+ * macro_len */
+#error MACRO_MAXKEYS must be a multiple of 4
+#endif
 
-static const uint8_t flash[FLASH_PAGE_NUM][FLASH_PAGE_SIZE] __attribute__((section(".userflash")));
+typedef struct {
+    const uint8_t data[FLASH_PAGE_NUM][FLASH_PAGE_SIZE];
+} __attribute__ ((packed)) flashpage_t;
 
-#define FLASH_START              ((uint32_t)&flash)
-#define FLASH_END               (FLASH_START + FLASH_LEN)
-#define FLASH_CRC               (FLASH_START + FLASH_LEN_CRC)
+typedef struct {
+    event_t keymap[LAYERS_NUM][ROWS_NUM][COLS_NUM];
+    event_t macro_buffer[MACRO_MAXKEYS][MACRO_MAXLEN];
+    uint8_t macro_len[MACRO_MAXKEYS];
+    uint32_t layer;
+    uint32_t nkro_active;
+} __attribute__ ((packed)) flashdata_t;
 
-static volatile uint32_t flash_current = 0;
-static volatile uint8_t flash_byte_len = 0;
-static volatile uint32_t flash_data = 0;
+typedef struct {
+    uint32_t data[sizeof(flashdata_t) >> 2];
+    uint32_t zero[(sizeof(flashpage_t) - sizeof(flashdata_t) - sizeof(uint32_t)) >> 2];
+    uint32_t crc;
+} __attribute__ ((packed, aligned(4))) flashcrc_t;
+
+typedef union {
+    flashpage_t page;
+    flashdata_t data;
+    flashcrc_t crc;
+} __attribute__ ((packed, aligned(4))) flash_t;
+
+flash_t flash __attribute__ ((section(".userflash")));
 
 static uint32_t
 flash_crc()
@@ -75,7 +84,7 @@ flash_crc()
     uint32_t result;
 
     crc_reset();
-    result = crc_calculate_block((uint32_t *)FLASH_START, FLASH_LEN_CRC >> 2);
+    result = crc_calculate_block(&flash.crc.data[0], sizeof(flash.crc.data) >> 2);
     elog("crc %08x", result);
     return result;
 }
@@ -83,7 +92,7 @@ flash_crc()
 static uint8_t
 flash_crc_check()
 {
-    uint32_t stored_crc = *(uint32_t *)FLASH_CRC;
+    uint32_t stored_crc = flash.crc.crc;
     uint32_t calced_crc = flash_crc();
 
     return (stored_crc == calced_crc);
@@ -96,127 +105,126 @@ crc_init()
 }
 
 static uint32_t
-flash_read()
+flash_erase()
 {
-    uint32_t data;
+    uint32_t i;
+    uint32_t status;
 
-    if ((flash_current < FLASH_START) ||
-        (flash_current >= FLASH_END)) {
-        elog("read address outside of user flash range");
-        return 0;
-    }
-
-    data = *(uint32_t *)(flash_current);
-    flash_current += sizeof(uint32_t);
-    return data;
-}
-
-static void
-flash_write(uint32_t data)
-{
-    uint32_t flash_status = 0;
-
-    if ((flash_current < FLASH_START) ||
-        (flash_current >= FLASH_END)) {
-        elog("write address address outside of user flash range");
-        return;
-    }
-
-    flash_program_word(flash_current, data);
-    flash_status = flash_get_status_flags();
-    if (flash_status != FLASH_SR_EOP) {
-        elog("error after write %02x", flash_status);
-        return;
-    }
-
-    flash_current += sizeof(uint32_t);
-}
-
-uint8_t
-flash_read_start()
-{
-    if (! flash_crc_check()) {
-        elog("flash crc not correct");
-        return 0;
-    }
-
-    flash_current = FLASH_START;
-    flash_byte_len = 0;
-    flash_data = 0;
-
-    return 1;
-}
-
-uint8_t
-flash_read_byte()
-{
-    uint8_t data;
-
-    if (flash_byte_len == 0) {
-        flash_data = flash_read();
-        flash_byte_len = sizeof(uint32_t);
-    }
-
-    data = (uint8_t)(flash_data >> 24) & 0xff;
-    flash_data <<= 8;
-    flash_byte_len--;
-
-    return data;
-}
-
-void
-flash_read_stop()
-{
-    flash_current = 0;
-}
-
-void
-flash_write_byte(uint8_t data)
-{
-    flash_data <<= 8;
-    flash_data |= data;
-
-    flash_byte_len++;
-
-    if (flash_byte_len == sizeof(uint32_t)) {
-        flash_write(flash_data);
-        flash_byte_len = 0;
-        flash_data = 0;
-    }
-}
-
-uint8_t
-flash_write_start()
-{
-    uint8_t i;
-    uint32_t flash_status = 0;
-
+    elog("erasing flash");
     flash_clear_status_flags();
     flash_unlock();
     for (i = 0; i < FLASH_PAGE_NUM; i++) {
-        flash_erase_page((uint32_t)&flash[i]);
-        flash_status = flash_get_status_flags();
-        if (flash_status != FLASH_SR_EOP) {
-            elog("page erase %d: status error %02x", i, flash_status);
+        flash_erase_page((uint32_t)&flash.page.data[i]);
+        status = flash_get_status_flags();
+        if (status != FLASH_SR_EOP) {
+            elog("page erase %d: status error %02x", i, status);
             return 0;
         }
     }
 
-    flash_current = FLASH_START;
-    flash_byte_len = 0;
-    flash_data = 0;
+    return 1;
+}
+
+uint32_t
+flash_clear_config(void)
+{
+    flash_erase();
+    flash_lock();
+    return 1;
+}
+
+uint32_t
+flash_read_config(void)
+{
+    elog("reading configuration");
+
+    if (! flash_crc_check()) {
+        elog("crc not correct");
+        return 0;
+    }
+
+    cm_disable_interrupts();
+    memcpy(keymap, flash.data.keymap, sizeof(flash.data.keymap));
+    memcpy(macro_buffer, flash.data.macro_buffer, sizeof(flash.data.macro_buffer));
+    memcpy(macro_len, flash.data.macro_len, sizeof(flash.data.macro_len));
+    layer = flash.data.layer;
+    nkro_active = flash.data.nkro_active;
+    cm_enable_interrupts();
 
     return 1;
 }
 
-void
-flash_write_stop()
+static uint32_t
+flash_write_block(void *dest, const void *src, uint32_t len)
 {
+    uint32_t i;
+    uint32_t status;
+    uint32_t *d = dest;
+    const uint32_t *s = src;
+
+    if (((uint32_t)d < (uint32_t)&flash) ||
+        (((uint32_t)d + len) > ((uint32_t)&flash + sizeof(flash)))) {
+        elog("write address address outside of user flash range");
+        return 0;
+    }
+
+    for (i = 0; i < len; i += sizeof(uint32_t)) {
+        flash_program_word((uint32_t)d++, *s++);
+        status = flash_get_status_flags();
+        if (status != FLASH_SR_EOP) {
+            elog("error after write %d:%02x", i, status);
+            return 0;
+        }
+    }
+
+    return 1;
+}
+
+uint32_t
+flash_write_config(void)
+{
+    uint32_t data;
+    uint32_t status;
     uint32_t crc;
 
-    while (flash_current < FLASH_CRC) {
-        flash_write_byte(0);
+    if (! flash_erase()) {
+        return 0;
     }
-    flash_write(flash_crc());
+
+    elog("writing configuration");
+
+    if (! flash_write_block(&flash.data.keymap,
+                            keymap,
+                            sizeof(flash.data.keymap))) {
+        return 0;
+    }
+    if (! flash_write_block(&flash.data.macro_buffer,
+                            macro_buffer,
+                            sizeof(flash.data.macro_buffer))) {
+        return 0;
+    }
+    if (!flash_write_block(&flash.data.macro_len,
+                           macro_len,
+                           sizeof(flash.data.macro_len))) {
+        return 0;
+    }
+    data = (uint32_t)layer;
+    if (!flash_write_block(&flash.data.layer,
+                           &data,
+                           sizeof(data))) {
+        return 0;
+    }
+    data = (uint32_t)nkro_active;
+    if (!flash_write_block(&flash.data.nkro_active,
+                           &data,
+                           sizeof(data))) {
+        return 0;
+    }
+    crc = flash_crc();
+    if (!flash_write_block(&flash.crc.crc, &crc, sizeof(crc))) {
+        return 0;
+    }
+
     flash_lock();
+    return 1;
 }

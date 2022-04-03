@@ -15,7 +15,8 @@ supports:
 - generation of mouse events
 - usb serial interface
 - an automouse mode for fast-clicking
-- ephemeral programmable macro keys via serial
+- programmable macro keys via serial
+- storing current configuration in "userflash"
 
 The board is programmed using a 6-pin TagConnect, that must be wired
 to a STM Discovery SWD/STLink programming port.
@@ -88,6 +89,13 @@ configuration. Commands available are:
 
     N - set keyboard mode to nkro.
 
+    R - read configuration from flash
+
+    W - write configuration to flash
+
+    Z - clear the configration flash, revert to "factory" keymap at
+        next powerup.
+
 Command interpretation starts after receiving a newline.
 
 Automouse
@@ -100,10 +108,12 @@ while using your hands for something else.
 Macros
 ------
 
-Macros are currently ephemeral, which is to say, they can be set after
-power up by serial and are lost at power off. The strings that you
-provide via serial need to be translated into usb keycodes, so
-currently only 7-bit ascii strings are supported.
+Macros set via serial are lost at power off unless the configuration
+is written to flash. Loading from flash happens automatically at
+powerup.
+
+The strings that you provide via serial need to be translated into usb
+keycodes, so currently only 7-bit ascii strings are supported.
 
 Setting macros via the shell is easy:
 

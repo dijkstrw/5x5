@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 by Willem Dijkstra <wpd@xs4all.nl>.
+ * Copyright (c) 2021-2022 by Willem Dijkstra <wpd@xs4all.nl>.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,10 +28,13 @@
 #define _MACRO_H
 
 #include <stdint.h>
+
+#include "config.h"
 #include "keymap.h"
-#include "usb.h"
 
 extern volatile uint8_t macro_active;
+extern event_t macro_buffer[MACRO_MAXKEYS][MACRO_MAXLEN];
+extern uint8_t macro_len[MACRO_MAXKEYS];
 
 void macro_init(void);
 void macro_set_phrase(uint8_t key, uint8_t *phrase, uint8_t size);

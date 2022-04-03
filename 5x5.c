@@ -86,6 +86,7 @@ main(void)
     matrix_init();
     macro_init();
     usb_init();
+    flash_read_config();
 
     elog("initialized");
 

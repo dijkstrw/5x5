@@ -61,8 +61,20 @@
 #define MS_DEBOUNCE     10
 #define MS_ENUMERATE    5000
 
-#define MACRO_MAXKEYS   10
+/*
+ * Number of macro keys, and max len of a macro sequence
+ */
+#define MACRO_MAXKEYS   12
 #define MACRO_MAXLEN    32
+
+/*
+ * Amount of userflash to be used to store the configuration.
+ *
+ * STM32 flash page size depends on the device:
+ * stm32f103xx, with < 128k flash = 1k
+ */
+#define FLASH_PAGE_NUM  4
+#define FLASH_PAGE_SIZE 0x400
 
 #define LEDS_GPIO       GPIOC
 #define LEDS_RCC        RCC_GPIOC

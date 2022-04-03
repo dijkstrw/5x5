@@ -32,12 +32,8 @@
 
 void crc_init(void);
 
-uint8_t flash_read_start(void);
-uint8_t flash_read_byte(void);
-void flash_read_stop(void);
-
-uint8_t flash_write_start(void);
-void flash_write_byte(uint8_t data);
-void flash_write_stop(void);
+uint32_t flash_clear_config(void);
+uint32_t flash_read_config(void);
+uint32_t flash_write_config(void);
 
 #endif

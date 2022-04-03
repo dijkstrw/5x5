@@ -30,6 +30,7 @@
 
 #include "ring.h"
 
+#define CMD_FLASH_CLEAR   'Z'
 #define CMD_FLASH_READ    'R'
 #define CMD_FLASH_WRITE   'W'
 #define CMD_IDENTIFY      'i'

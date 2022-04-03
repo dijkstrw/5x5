@@ -126,48 +126,6 @@ command_set_macro(struct ring *input_ring)
     elog("macro not closed of with eol");
 }
 
-static void
-command_flash_read()
-{
-    uint8_t data;
-
-    elog("reading flash");
-
-    if (!flash_read_start()) {
-        return;
-    }
-
-    data = flash_read_byte();
-    while (data != 0) {
-        elog("reading %02x", data);
-        serial_in(&data, 1);
-        data = flash_read_byte();
-    }
-
-    flash_read_stop();
-}
-
-static void
-command_flash_write()
-{
-    elog("writing flash");
-
-    if (!flash_write_start()) {
-        return;
-    }
-
-    if (nkro_active) {
-        flash_write_byte(CMD_NKRO_SET);
-    } else {
-        flash_write_byte(CMD_NKRO_CLEAR);
-    }
-    flash_write_byte('\n');
-
-    flash_write_stop();
-    /* macros */
-    /* keymap */
-}
-
 void
 command_process(struct ring *input_ring)
 {
@@ -176,12 +134,16 @@ command_process(struct ring *input_ring)
 
     while (ring_read_ch(input_ring, &c) != -1) {
         switch (c) {
+            case CMD_FLASH_CLEAR:
+                flash_clear_config();
+                break;
+
             case CMD_FLASH_READ:
-                command_flash_read();
+                flash_read_config();
                 break;
 
             case CMD_FLASH_WRITE:
-                command_flash_write();
+                flash_write_config();
                 break;
 
             case CMD_IDENTIFY:
@@ -225,6 +187,12 @@ command_process(struct ring *input_ring)
                 printfnl("N                - set nkro");
                 printfnl("R                - read configuration from flash");
                 printfnl("W                - write configuration to flash");
+                printfnl("Z                - erase configuration flash");
+                break;
+
+            case '\n':
+            case '\r':
+                /* remove eols */
                 break;
 
             default:
